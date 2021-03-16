@@ -32,6 +32,7 @@ GLint tempX = 0;
 GLint tempY = 0;
 Shader shader;
 Sprite mySquare;
+Sprite myOtherSquare;
 
 //OPENGL FUNCTION PROTOTYPES
 void display();				//used as callback in glut for display.
@@ -56,13 +57,18 @@ void display()
 	//clear the colour and depth buffers
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0));
+
+	//make work
+	ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(-mySquare.GetXPos(), -mySquare.GetYPos(), 0.0));
+
+	glm::mat4 ModelViewMatrix = glm::translate(ViewMatrix, glm::vec3(mySquare.GetXPos(), mySquare.GetYPos(), 0.0));
 
 	glEnable(GL_BLEND);
-	glm::mat4 ModelViewMatrix = glm::translate(ViewMatrix, glm::vec3(mySquare.GetXPos(), mySquare.GetYPos(), 0.0));
-	mySquare.Render(shader, ModelViewMatrix, ProjectionMatrix);
+	mySquare.Render(shader, ViewMatrix, ProjectionMatrix);
 	glDisable(GL_BLEND);
 
+
+	myOtherSquare.Render(shader, ViewMatrix, ProjectionMatrix);
 	glutSwapBuffers();
 
 }
@@ -85,6 +91,10 @@ void init()
 	float red[3] = { 1,0,0 };
 
 	mySquare.Init(shader, red, "textures/car.png");
+
+	myOtherSquare.SetWidth(10.0f);
+	myOtherSquare.SetHeight(10.0f);
+	myOtherSquare.Init(shader, red, "textures/character.png");
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
