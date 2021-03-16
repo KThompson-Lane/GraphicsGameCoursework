@@ -21,7 +21,7 @@ using namespace std;
 
 glm::mat4 ViewMatrix;  // matrix for the modelling and viewing
 glm::mat4 ProjectionMatrix; // matrix for the orthographic projection
-int screenWidth = 1080, screenHeight = 1080;
+int screenWidth = 480, screenHeight = 480;
 
 //booleans to handle when the arrow keys are pressed or released.
 bool Left = false;
@@ -30,8 +30,7 @@ bool Up = false;
 bool Down = false;
 
 Shader shader;
-Sprite mySquare(-1.5);
-Sprite myBackground;
+Sprite mySquare;
 
 //OPENGL FUNCTION PROTOTYPES
 void display();				//used as callback in glut for display.
@@ -47,7 +46,7 @@ void reshape(int width, int height)		// Resize the OpenGL window
 
 	glViewport(0, 0, width, height);						// set Viewport dimensions
 
-	ProjectionMatrix = glm::ortho(width/-25.0, width/25.0, height/-25.0, height/25.0); 
+	ProjectionMatrix = glm::ortho(-25.0, 25.0, -25.0, 25.0); 
 }
 
 
@@ -57,10 +56,9 @@ void display()
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0));
-	myBackground.Render(shader, ViewMatrix, ProjectionMatrix);
-	glm::mat4 ModelViewMatrix = glm::translate(ViewMatrix, glm::vec3(mySquare.GetXPos(), mySquare.GetYPos(), 0.0));
-	ModelViewMatrix = glm::rotate(ModelViewMatrix, mySquare.GetRot(), glm::vec3(0.0, 0.0, 1.0));
+
 	glEnable(GL_BLEND);
+	glm::mat4 ModelViewMatrix = glm::translate(ViewMatrix, glm::vec3(mySquare.GetXPos(), mySquare.GetYPos(), 0.0));
 	mySquare.Render(shader, ModelViewMatrix, ProjectionMatrix);
 	glDisable(GL_BLEND);
 
@@ -72,7 +70,7 @@ void init()
 {
 	FreeImage_Initialise();
 
-	glClearColor(0.0,0.0,0.0,0.0);						//sets the clear colour to black
+	glClearColor(0.0,0.0,1.0,0.0);						//sets the clear colour to black
 	 
 	//Load the GLSL program 
 	if (!shader.load("Basic", "./glslfiles/basicTexture.vert", "./glslfiles/basicTexture.frag"))
@@ -80,14 +78,9 @@ void init()
 		std::cout << "failed to load shader" << std::endl;
 	}
 
-	myBackground.SetWidth(90.0f);
-	myBackground.SetHeight(90.0f);
-	float black[3] = { 1,0,0 };
-	myBackground.Init(shader, black, "textures/background.png");
-
 	///This part commented is to scale the width of the sprite to match the dimensions of the car.png image.
-	mySquare.SetWidth(3.0f);
-	mySquare.SetHeight(3.0f * (500 / 264.0f));
+	mySquare.SetWidth(10.0f *(500 / 264.0f));
+	mySquare.SetHeight(10.0f);
 	float red[3] = { 1,0,0 };
 
 	mySquare.Init(shader, red, "textures/car.png");
@@ -137,25 +130,26 @@ void processKeys()
 {
 	if (Left)
 	{
-		mySquare.IncRot(0.01f);
+		mySquare.IncPos(-0.1f, 0.0f);
 	}
 	if (Right)
 	{
-		mySquare.IncRot(-0.01f);
+		mySquare.IncPos(0.1f, 0.0f);
 	}
 	if (Up)
 	{
-		mySquare.IncPos(-(0.5 * sinf(mySquare.GetRot())), (0.5 * cosf(mySquare.GetRot()))); //magic numbers change to use a speed variable
+		mySquare.IncPos(0.0f, 0.1f);
 	}
 	if (Down)
 	{
-		mySquare.IncPos((0.5 * sinf(mySquare.GetRot())), -(0.5 * cosf(mySquare.GetRot()))); //same as above
+		mySquare.IncPos(0.0f, -0.1f);
 	}
 }
 
 void idle()
 {
 	processKeys();
+
 	glutPostRedisplay();
 }
 /**************** END OPENGL FUNCTIONS *************************/

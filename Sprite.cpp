@@ -17,45 +17,8 @@ Sprite::Sprite()
 	m_Width = 0.0f;
 	m_Height = 0.0f;
 	m_NumberOfVerts = 0;
-	m_xpos = 0.0f;
-	m_ypos = 0.0f;
-}
-Sprite::Sprite(float x, float y) 
-{
-	m_vaoID = 0;
-	m_vboID[0] = 0;
-	m_vboID[1] = 0;
-	m_Width = 0.0f;
-	m_Height = 0.0f;
-	m_NumberOfVerts = 0;
-	m_xpos = x;
-	m_ypos = y;
-	m_rot = 0;
-}
-Sprite::Sprite(float rot) 
-{
-	m_vaoID = 0;
-	m_vboID[0] = 0;
-	m_vboID[1] = 0;
-	m_Width = 0.0f;
-	m_Height = 0.0f;
-	m_NumberOfVerts = 0;
-	m_xpos = 0.0f;
-	m_ypos = 0.0f;
-	m_rot = rot;
-}
-
-Sprite::Sprite(float x, float y, float rot) 
-{
-	m_vaoID = 0;
-	m_vboID[0] = 0;
-	m_vboID[1] = 0;
-	m_Width = 0.0f;
-	m_Height = 0.0f;
-	m_NumberOfVerts = 0;
-	m_xpos = x;
-	m_ypos = y;
-	m_rot = rot;
+	m_xpos = 0;
+	m_ypos = 0;
 }
 
 void Sprite::SetWidth(float size)
@@ -85,20 +48,10 @@ float Sprite::GetYPos()
 	return m_ypos;
 }
 
-float Sprite::GetRot()
-{
-	return m_rot;
-}
-
 void Sprite::IncPos(float x, float y)
 {
 	m_xpos += x;
 	m_ypos += y;
-}
-
-void Sprite::IncRot(float angle)
-{
-	m_rot += angle;
 }
 void Sprite::Init(Shader& shader, float colour[3], std::string filename)
 {

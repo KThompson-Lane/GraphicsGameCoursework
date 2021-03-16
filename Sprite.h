@@ -22,16 +22,13 @@ private:
 	//position of the sprite
 	float m_xpos;
 	float m_ypos;
-	float m_rot;
+
 	GLuint m_TexName; //identifier for the texture
 
 	OBB obb; //obb object for oriented bounding box collision
 
 public:
 	Sprite();					//default constructor
-	Sprite(float x, float y);
-	Sprite(float rot);
-	Sprite(float x, float y, float rot);
 	void Init(Shader& shader, float colour[3], std::string filename);
 	void SetWidth(float size);
 	void SetHeight(float size);
@@ -39,9 +36,7 @@ public:
 	void SetYpos(float y);
 	float GetXPos();
 	float GetYPos();
-	float GetRot();
 	void IncPos(float x, float y);
-	void IncRot(float rot);
 	void Render(Shader& shader, glm::mat4& ModelViewMatrix, glm::mat4& ProjectionMatrix);
 	OBB& GetOBB();
 	bool IsInCollision(OBB &anotherOBB);
