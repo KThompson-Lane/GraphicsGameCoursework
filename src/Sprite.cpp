@@ -1,5 +1,5 @@
 #include "Sprite.h"
-#include "shaders\Shader.h"
+#include "..\shaders\Shader.h"
 #include <string>
 #include "ImageLoading.h"
 

@@ -1,11 +1,11 @@
 #pragma once
 
 #include <string>
-#include "glm\glm.hpp"
-#include "glm\gtc\matrix_transform.hpp"
-#include "gl\glew.h"
+#include "..\glm\glm.hpp"
+#include "..\glm\gtc\matrix_transform.hpp"
+#include "..\gl\glew.h"
 
-#include "shaders\Shader.h"
+#include "..\shaders\Shader.h"
 #include "OBB.h"
 
 class Sprite

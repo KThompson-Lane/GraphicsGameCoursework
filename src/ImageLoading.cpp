@@ -1,7 +1,7 @@
 
 #include "ImageLoading.h"
 
-#include "FreeImage.h"
+#include "..\FreeImage.h"
 #include <string>
 #include <iostream>
 using namespace std;

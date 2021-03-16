@@ -2,17 +2,17 @@
 using namespace std;
 
 //--- OpenGL ---
-#include "GL\glew.h"
-#include "GL\wglew.h"
+#include "..\GL\glew.h"
+#include "..\GL\wglew.h"
 #pragma comment(lib, "glew32.lib")
 //--------------
 
-#include "glm\glm.hpp"
-#include "glm\gtc\matrix_transform.hpp"
+#include "..\glm\glm.hpp"
+#include "..\glm\gtc\matrix_transform.hpp"
 
-#include "shaders\Shader.h"
-#include "GL\freeglut.h"
-#include "FreeImage.h"
+#include "..\shaders\Shader.h"
+#include "..\GL\freeglut.h"
+#include "..\FreeImage.h"
 
 #include "Sprite.h"
 
@@ -21,14 +21,15 @@ using namespace std;
 
 glm::mat4 ViewMatrix;  // matrix for the modelling and viewing
 glm::mat4 ProjectionMatrix; // matrix for the orthographic projection
-int screenWidth = 480, screenHeight = 480;
+int screenWidth = 1280, screenHeight = 720;
 
 //booleans to handle when the arrow keys are pressed or released.
 bool Left = false;
 bool Right = false;
 bool Up = false;
 bool Down = false;
-
+GLint tempX = 0;
+GLint tempY = 0;
 Shader shader;
 Sprite mySquare;
 
@@ -44,7 +45,7 @@ void reshape(int width, int height)		// Resize the OpenGL window
 	screenWidth = width;
 	screenHeight = height;
 
-	glViewport(0, 0, width, height);						// set Viewport dimensions
+	glViewport(tempX, tempY, width, height);						// set Viewport dimensions
 
 	ProjectionMatrix = glm::ortho(-25.0, 25.0, -25.0, 25.0); 
 }
@@ -130,19 +131,21 @@ void processKeys()
 {
 	if (Left)
 	{
-		mySquare.IncPos(-0.1f, 0.0f);
+		tempX += 10;
+		glViewport(tempX, tempY, screenWidth, screenHeight);
+		//mySquare.IncPos(-0.1f, 0.0f);
 	}
 	if (Right)
 	{
-		mySquare.IncPos(0.1f, 0.0f);
+		//mySquare.IncPos(0.1f, 0.0f);
 	}
 	if (Up)
 	{
-		mySquare.IncPos(0.0f, 0.1f);
+		//mySquare.IncPos(0.0f, 0.1f);
 	}
 	if (Down)
 	{
-		mySquare.IncPos(0.0f, -0.1f);
+		//mySquare.IncPos(0.0f, -0.1f);
 	}
 }
 

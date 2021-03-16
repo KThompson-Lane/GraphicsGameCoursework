@@ -3,8 +3,8 @@
 #define OBB_H
 
 
-#include "glm\glm.hpp"
-#include "glm\gtc\matrix_transform.hpp"
+#include "..\glm\glm.hpp"
+#include "..\glm\gtc\matrix_transform.hpp"
 
 // Polygon objects
 const int NUMVERTS = 4;
