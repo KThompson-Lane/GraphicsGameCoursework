@@ -45,7 +45,7 @@ void reshape(int width, int height)		// Resize the OpenGL window
 	screenWidth = width;
 	screenHeight = height;
 
-	glViewport(tempX, tempY, width, height);						// set Viewport dimensions
+	glViewport(0,0, width, height);						// set Viewport dimensions
 
 	ProjectionMatrix = glm::ortho(-25.0, 25.0, -25.0, 25.0); 
 }
@@ -131,21 +131,19 @@ void processKeys()
 {
 	if (Left)
 	{
-		tempX += 10;
-		glViewport(tempX, tempY, screenWidth, screenHeight);
-		//mySquare.IncPos(-0.1f, 0.0f);
+		mySquare.IncPos(-0.1f, 0.0f);
 	}
 	if (Right)
 	{
-		//mySquare.IncPos(0.1f, 0.0f);
+		mySquare.IncPos(0.1f, 0.0f);
 	}
 	if (Up)
 	{
-		//mySquare.IncPos(0.0f, 0.1f);
+		mySquare.IncPos(0.0f, 0.1f);
 	}
 	if (Down)
 	{
-		//mySquare.IncPos(0.0f, -0.1f);
+		mySquare.IncPos(0.0f, -0.1f);
 	}
 }
 
