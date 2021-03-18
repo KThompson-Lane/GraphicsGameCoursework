@@ -17,8 +17,19 @@ Sprite::Sprite()
 	m_Width = 0.0f;
 	m_Height = 0.0f;
 	m_NumberOfVerts = 0;
-	m_xpos = 0;
-	m_ypos = 0;
+	m_xpos = 0.0f;
+	m_ypos = 0.0f;
+}
+Sprite::Sprite(float x, float y)
+{
+	m_vaoID = 0;
+	m_vboID[0] = 0;
+	m_vboID[1] = 0;
+	m_Width = 0.0f;
+	m_Height = 0.0f;
+	m_NumberOfVerts = 0;
+	m_xpos = x;
+	m_ypos = y;
 }
 
 void Sprite::SetWidth(float size)
@@ -53,6 +64,7 @@ void Sprite::IncPos(float x, float y)
 	m_xpos += x;
 	m_ypos += y;
 }
+
 void Sprite::Init(Shader& shader, float colour[3], std::string filename)
 {
 	//load png image
@@ -79,9 +91,6 @@ void Sprite::Init(Shader& shader, float colour[3], std::string filename)
 		std::cout << "Image loaded " << std::endl;
 	}
 	
-
-	
-
 	//Create the geometry
 	m_NumberOfVerts = 6;
 	float vert[18];	// create a vertex array

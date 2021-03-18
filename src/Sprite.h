@@ -29,6 +29,7 @@ private:
 
 public:
 	Sprite();					//default constructor
+	Sprite(float x, float y);
 	void Init(Shader& shader, float colour[3], std::string filename);
 	void SetWidth(float size);
 	void SetHeight(float size);

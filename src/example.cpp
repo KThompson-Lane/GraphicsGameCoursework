@@ -14,7 +14,7 @@ using namespace std;
 #include "..\GL\freeglut.h"
 #include "..\FreeImage.h"
 
-#include "Sprite.h"
+#include "Player.h"
 
 #include <iostream>
 using namespace std;
@@ -31,7 +31,7 @@ bool Down = false;
 GLint tempX = 0;
 GLint tempY = 0;
 Shader shader;
-Sprite mySquare;
+Player player(0.25);
 Sprite myOtherSquare;
 
 //OPENGL FUNCTION PROTOTYPES
@@ -48,7 +48,7 @@ void reshape(int width, int height)		// Resize the OpenGL window
 
 	glViewport(0,0, width, height);						// set Viewport dimensions
 
-	ProjectionMatrix = glm::ortho(-25.0, 25.0, -25.0, 25.0); 
+	ProjectionMatrix = glm::ortho(width/-25.0, width/25.0, height/-25.0, height/25.0); 
 }
 
 
@@ -57,19 +57,22 @@ void display()
 	//clear the colour and depth buffers
 	glClear(GL_COLOR_BUFFER_BIT);
 
-
 	//make work
-	ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(-mySquare.GetXPos(), -mySquare.GetYPos(), 0.0));
+	ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(player.GetXPos(), player.GetYPos(), 0.0));
 
-	glm::mat4 ModelViewMatrix = glm::translate(ViewMatrix, glm::vec3(mySquare.GetXPos(), mySquare.GetYPos(), 0.0));
-
-	glEnable(GL_BLEND);
-	mySquare.Render(shader, ViewMatrix, ProjectionMatrix);
-	glDisable(GL_BLEND);
-
+	glm::mat4 ModelViewMatrix = glm::translate(ViewMatrix, glm::vec3(player.GetXPos(), player.GetYPos(), 0.0));
 
 	myOtherSquare.Render(shader, ViewMatrix, ProjectionMatrix);
-	glutSwapBuffers();
+
+	glEnable(GL_BLEND);
+ModelViewMatrix = glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0);
+ModelViewMatrix = glm::rotate(ModelViewMatrix, player.GetRot(), glm::vec3(0.0, 0.0, 1.0));
+player.Render(shader, ModelViewMatrix, ProjectionMatrix);
+
+glDisable(GL_BLEND);
+
+
+glutSwapBuffers();
 
 }
 
@@ -77,8 +80,8 @@ void init()
 {
 	FreeImage_Initialise();
 
-	glClearColor(0.0,0.0,1.0,0.0);						//sets the clear colour to black
-	 
+	glClearColor(0.0, 0.0, 1.0, 0.0);						//sets the clear colour to black
+
 	//Load the GLSL program 
 	if (!shader.load("Basic", "./glslfiles/basicTexture.vert", "./glslfiles/basicTexture.frag"))
 	{
@@ -86,15 +89,15 @@ void init()
 	}
 
 	///This part commented is to scale the width of the sprite to match the dimensions of the car.png image.
-	mySquare.SetWidth(10.0f *(500 / 264.0f));
-	mySquare.SetHeight(10.0f);
+	player.SetWidth(10.0f * (264.0f / 500.0f));
+	player.SetHeight(10.0f);
 	float red[3] = { 1,0,0 };
 
-	mySquare.Init(shader, red, "textures/car.png");
+	player.Init(shader, red, "textures/car.png");
 
-	myOtherSquare.SetWidth(10.0f);
-	myOtherSquare.SetHeight(10.0f);
-	myOtherSquare.Init(shader, red, "textures/character.png");
+	myOtherSquare.SetWidth(200.0f);
+	myOtherSquare.SetHeight(200.0f);
+	myOtherSquare.Init(shader, red, "textures/background.png");
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
@@ -139,22 +142,54 @@ void specialUp(int key, int x, int y)
 
 void processKeys()
 {
-	if (Left)
+	if (Left && (player.GetSpeed() != 0.0f))
 	{
-		mySquare.IncPos(-0.1f, 0.0f);
+		player.IncRot(0.05f * player.GetSpeed());
 	}
-	if (Right)
+	if (Right && (player.GetSpeed() != 0.0f))
 	{
-		mySquare.IncPos(0.1f, 0.0f);
+		player.IncRot(-0.05f * player.GetSpeed());
 	}
 	if (Up)
 	{
-		mySquare.IncPos(0.0f, 0.1f);
+		if (player.GetSpeed() < 0)
+		{
+			player.IncSpeed(0.005f);
+		}
+		if (player.GetSpeed() <= player.GetTopSpeed())
+		{
+			player.IncSpeed(0.001f);
+		}
 	}
 	if (Down)
 	{
-		mySquare.IncPos(0.0f, -0.1f);
+		if (player.GetSpeed() > 0)
+		{
+			player.IncSpeed(-0.005f);
+		}
+		if (player.GetSpeed() >= -(player.GetTopSpeed() - (player.GetTopSpeed()/10)))
+		{
+			player.IncSpeed(-0.001f);
+		}
 	}
+	if (!Up && !Down)
+	{
+		
+		if (player.GetSpeed() < 0)
+		{
+			player.IncSpeed(0.001f);
+		}
+		else if (player.GetSpeed() > 0)
+		{
+			player.IncSpeed(-0.001);
+		}
+		if ((player.GetSpeed() > -0.005 && player.GetSpeed() < 0.0f) || (player.GetSpeed() < 0.005 && player.GetSpeed() > 0.0f))
+		{
+			player.SetSpeed(0);
+		}
+	}
+	player.IncPos(-(player.GetSpeed() * sinf(player.GetRot())), (player.GetSpeed() * cosf(player.GetRot()))); //same as above
+
 }
 
 void idle()
