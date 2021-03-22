@@ -17,7 +17,7 @@ void Game::Init()
 {
 	FreeImage_Initialise();
 
-	glClearColor(0.0, 0.0, 1.0, 0.0);						//sets the clear colour to black
+	glClearColor(0.0, 0.0, 0.0, 0.0);						//sets the clear colour to black
 
 	//Load the GLSL program 
 	if (!shader.load("Basic", "./glslfiles/basicTexture.vert", "./glslfiles/basicTexture.frag"))
@@ -31,11 +31,16 @@ void Game::Init()
 	float red[3] = { 1,0,0 };
 
 	player.Init(shader, red, "textures/car.png");
-
+	//player.IncPos(-70, 70);
+	//player.IncRot(3.14);
 	myOtherSquare.SetWidth(200.0f);
 	myOtherSquare.SetHeight(200.0f);
 	myOtherSquare.Init(shader, red, "textures/background.png");
-
+	bg.loadBackground("textures/spritesheet_tiles.png", 128.0f, 128.0f);
+	for (int i = 0; i < 900; i++)
+	{
+		bg.tiles[i].Init(shader, red);
+	}
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
@@ -106,7 +111,7 @@ void Game::ProcessInput(float dt)
 			player.SetSpeed(0);
 		}
 	}
-	std::cout << player.GetSpeed();
+	//std::cout << player.GetSpeed();
 	player.IncPos(-((player.GetSpeed() *dt)* sinf(player.GetRot())), ((player.GetSpeed()*dt)* cosf(player.GetRot()))); //same as above
 
 }
@@ -121,7 +126,15 @@ void Game::Render()
 
 	glm::mat4 ModelViewMatrix = glm::translate(getViewMatrix(), glm::vec3(player.GetXPos(), player.GetYPos(), 0.0));
 
-	myOtherSquare.Render(shader, ViewMatrix, ProjectionMatrix);
+	//myOtherSquare.Render(shader, ViewMatrix, ProjectionMatrix);
+
+	ModelViewMatrix = glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0);
+	for (int i = 0; i < 900; i++)
+	{
+		ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(((i % bg.GetMapWidth())*bg.tiles[i].GetWidth() - bg.GetMapWidth()),(bg.GetMapHeight() -(((i/ bg.GetMapHeight())*bg.tiles[i].GetHeight()) - bg.GetMapHeight())),0.0));
+		glm::mat4 ModelViewMatrix = glm::translate(getViewMatrix(), glm::vec3(player.GetXPos(), player.GetYPos(), 0.0));
+		bg.tiles[i].Render(shader, ModelViewMatrix, ProjectionMatrix);
+	}
 
 	glEnable(GL_BLEND);
 	ModelViewMatrix = glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0);

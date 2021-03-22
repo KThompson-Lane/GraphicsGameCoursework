@@ -21,7 +21,7 @@ using namespace std;
 
 glm::mat4 ViewMatrix;  // matrix for the modelling and viewing
 glm::mat4 ProjectionMatrix; // matrix for the orthographic projection
-int screenWidth = 1280, screenHeight = 720;
+int screenWidth = 2560, screenHeight = 1440;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
@@ -140,6 +140,7 @@ int main(int argc, char **argv)
 
 	glutSpecialFunc(special);
 	glutSpecialUpFunc(specialUp);
+	glutFullScreenToggle();
 	//starts the main loop. Program loops and calls callback functions as appropriate.
 	glutMainLoop();
 

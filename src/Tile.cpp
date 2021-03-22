@@ -1,16 +1,12 @@
-#include "Sprite.h"
-#include "..\shaders\Shader.h"
-#include <string>
-#include "ImageLoading.h"
+#include "Tile.h"
 
-#include <string>
-
-#include <iostream>
-
-
-
-Sprite::Sprite()
+Tile::Tile()
 {
+	this->m_tileOffsetX = 0;
+	this->m_tileOffsetY = 0;
+	this->m_tileSizeX = 0;
+	this->m_tileSizeY = 0;
+	this->m_TexName = 0;
 	m_vaoID = 0;
 	m_vboID[0] = 0;
 	m_vboID[1] = 0;
@@ -19,79 +15,87 @@ Sprite::Sprite()
 	m_NumberOfVerts = 0;
 	m_xpos = 0.0f;
 	m_ypos = 0.0f;
+	m_sheetWidth = 0.0f;
+	m_sheetHeight = 0.0f;
 }
-Sprite::Sprite(float x, float y)
+
+Tile::Tile(int tileOffsetX, int tileOffsetY, float tileSizeX, float tileSizeY, GLuint bgTextureName)
 {
+	this->m_tileOffsetX = tileOffsetX;
+	this->m_tileOffsetY = tileOffsetY;
+	this->m_tileSizeX = tileSizeX;
+	this->m_tileSizeY = tileSizeY;
+	this->m_TexName = bgTextureName;
 	m_vaoID = 0;
 	m_vboID[0] = 0;
 	m_vboID[1] = 0;
 	m_Width = 0.0f;
 	m_Height = 0.0f;
 	m_NumberOfVerts = 0;
+	m_xpos = 0.0f;
+	m_ypos = 0.0f;
+	m_sheetWidth = 0.0f;
+	m_sheetHeight = 0.0f;
+}
+
+Tile::Tile(float x, float y, int tileOffsetX, int tileOffsetY, float tileSizeX, float tileSizeY, GLuint bgTextureName)
+{
+	this->m_tileOffsetX = tileOffsetX;
+	this->m_tileOffsetY = tileOffsetY;
+	this->m_tileSizeX = tileSizeX;
+	this->m_tileSizeY = tileSizeY;
+	this->m_TexName = bgTextureName;
+	m_vaoID = 0;
+	m_vboID[0] = 0;
+	m_vboID[1] = 0;
+	m_Width = 0;
+	m_Height = 0;
+	m_NumberOfVerts = 6;
 	m_xpos = x;
+	m_ypos = y;
+	m_sheetWidth = 0.0f;
+	m_sheetHeight = 0.0f;
+}
+
+Tile::Tile(float x, float y, int tileOffsetX, int tileOffsetY, float tileSizeX, float tileSizeY, float sheetWidth, float sheetHeight, GLuint bgTextureName)
+{
+	this->m_tileOffsetX = tileOffsetX;
+	this->m_tileOffsetY = tileOffsetY;
+	this->m_tileSizeX = tileSizeX;
+	this->m_tileSizeY = tileSizeY;
+	this->m_TexName = bgTextureName;
+	m_vaoID = 0;
+	m_vboID[0] = 0;
+	m_vboID[1] = 0;
+	m_Width = 20;
+	m_Height = 20;
+	m_NumberOfVerts = 6;
+	m_xpos = x;
+	m_ypos = y;
+	m_sheetWidth = sheetWidth;
+	m_sheetHeight = sheetHeight;
+}
+void Tile::setXPos(float x)
+{
+	m_xpos = x;
+}
+
+void Tile::setYPos(float y)
+{
 	m_ypos = y;
 }
 
-void Sprite::SetWidth(float size)
+float Tile::GetWidth()
 {
-	m_Width = size;
+	return m_Width;
+}
+float Tile::GetHeight()
+{
+	return m_Height;
 }
 
-void Sprite::SetHeight(float size)
+void Tile::Init(Shader& shader, float colour[3])
 {
-	m_Height = size;
-}
-
-void Sprite::SetXpos(float x)
-{
-	m_xpos = x;
-}
-void Sprite::SetYpos(float y)
-{
-	m_ypos = y;
-}
-float Sprite::GetXPos()
-{
-	return m_xpos;
-}
-float Sprite::GetYPos()
-{
-	return m_ypos;
-}
-
-void Sprite::IncPos(float x, float y)
-{
-	m_xpos += x;
-	m_ypos += y;
-}
-
-void Sprite::Init(Shader& shader, float colour[3], std::string filename)
-{
-	//load png image
-	int imageHeight = 0;
-	int imageWidth = 0;
-	
-	//create the texture on the GPU
-	glGenTextures(1, &m_TexName);
-	glBindTexture(GL_TEXTURE_2D, m_TexName);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);  //or use GL_CLAMP
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	
-	bool success = ImageLoading::loadImage(filename);
-	if (!success) {
-		std::cout << "Unable to load image file" << std::endl;
-		glDeleteTextures(1, &m_TexName);
-		return;
-	}
-	else
-	{
-		std::cout << "Image loaded " << std::endl;
-	}
-	
-	//Create the geometry
 	m_NumberOfVerts = 6;
 	float vert[18];	// create a vertex array
 
@@ -124,14 +128,23 @@ void Sprite::Init(Shader& shader, float colour[3], std::string filename)
 
 
 	float tex[12];
-	tex[0] = 0.0f;	 tex[1] = 1.0;
-	tex[2] = 0.0f;	 tex[3] = 0.0;
-	tex[4] = 1.0f;	 tex[5] = 0.0;
+	//U left V right (U = x V = Y)
 
-	tex[6] = 0.0f;	 tex[7] = 1.0;
-	tex[8] = 1.0f;	 tex[9] = 1.0;
-	tex[10] = 1.0f;	 tex[11] = 0.0;
+	tex[0] = (m_tileOffsetX * m_tileSizeX) / m_sheetWidth;	 tex[1] = ((m_tileOffsetY + 1) * m_tileSizeY) / m_sheetHeight; //top left (i.e. 0,1)
+	tex[2] = (m_tileOffsetX * m_tileSizeX) / m_sheetWidth;	 tex[3] = (m_tileOffsetY * m_tileSizeY) / m_sheetHeight; //bottom left(i.e. 0,1)
+	tex[4] = ((m_tileOffsetX + 1) * m_tileSizeX) / m_sheetWidth;	 tex[5] = (m_tileOffsetY * m_tileSizeY) / m_sheetHeight; //bottom right(i.e. 0,1)
 
+	//tex[0] = 0.0f;	 tex[1] = 1.0; //top left
+	//tex[2] = 0.0f;	 tex[3] = 0.0; //bottom left
+	//tex[4] = 1.0f;	 tex[5] = 0.0; //bottom right
+
+	tex[6] = (m_tileOffsetX * m_tileSizeX) / m_sheetWidth;		 tex[7] = ((m_tileOffsetY + 1) * m_tileSizeY) / m_sheetHeight; //top left (i.e. 0,1)
+	tex[8] = ((m_tileOffsetX + 1) * m_tileSizeX) / m_sheetWidth;	 tex[9] = ((m_tileOffsetY + 1) * m_tileSizeY) / m_sheetHeight; //top right(i.e. 0,1)
+	tex[10] = ((m_tileOffsetX + 1) * m_tileSizeX) / m_sheetWidth;	 tex[11] = (m_tileOffsetY * m_tileSizeY) / m_sheetHeight; //bottom right(i.e. 0,1)
+
+	//tex[6] = 0.0f;	 tex[7] = 1.0;	//top left
+	//tex[8] = 1.0f;	 tex[9] = 1.0;	// top right
+	//tex[10] = 1.0f;	 tex[11] = 0.0; //bottom right
 
 	float col[18];	// colour array
 	col[0] = colour[0]; col[1] = colour[1]; col[2] = colour[2]; //r,g,b values for each vertex
@@ -149,7 +162,7 @@ void Sprite::Init(Shader& shader, float colour[3], std::string filename)
 
 	glGenBuffers(3, m_vboID); // we need three VBOs - one for the vertices and one for the colours
 							//and an extra one for the texture coordinates
-			
+
 	//Lets set up the vertices.
 	glBindBuffer(GL_ARRAY_BUFFER, m_vboID[0]);
 
@@ -185,9 +198,10 @@ void Sprite::Init(Shader& shader, float colour[3], std::string filename)
 	glEnableVertexAttribArray(0);
 
 	glBindVertexArray(0);
+
 }
 
-void Sprite::Render(Shader& shader, glm::mat4& ModelViewMatrix, glm::mat4& ProjectionMatrix)
+void Tile::Render(Shader & shader, glm::mat4 & ModelViewMatrix, glm::mat4 & ProjectionMatrix)
 {
 	/****UPDATE THE CORNER VALUES BASED ON TRANSFORMATION***/
 	obb.transformPoints(ModelViewMatrix);
@@ -214,12 +228,12 @@ void Sprite::Render(Shader& shader, glm::mat4& ModelViewMatrix, glm::mat4& Proje
 	glUseProgram(0); //turn off the current shader
 }
 
-OBB& Sprite::GetOBB()
+OBB& Tile::GetOBB()
 {
 	return obb;
 }
 
-bool Sprite::IsInCollision(OBB &anotherOBB)
+bool Tile::IsInCollision(OBB& anotherOBB)
 {
 	if (obb.SAT2D(anotherOBB))
 	{
@@ -227,3 +241,7 @@ bool Sprite::IsInCollision(OBB &anotherOBB)
 	}
 	return false;
 }
+
+
+
+

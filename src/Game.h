@@ -6,6 +6,7 @@
 #include "..\GL\freeglut.h"
 #include "..\FreeImage.h"
 #include "Player.h"
+#include "Background.h"
 class Game
 {
 private:
@@ -16,6 +17,7 @@ private:
 	bool Down = false;
 	Shader shader;
 	Player player;
+	Background bg;
 	Sprite myOtherSquare;
 	glm::mat4 ProjectionMatrix;
 	glm::mat4 ViewMatrix;  // matrix for the modelling and viewing
