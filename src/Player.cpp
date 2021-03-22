@@ -1,7 +1,16 @@
 #include "Player.h"
 
+Player::Player()
+{
+	m_speed = 0.0f;
+	m_rot = 0.0f;
+	m_topSpeed = 0.25;
+}
+
 Player::Player(float topSpeed)
 {
+	m_speed = 0.0f;
+	m_rot = 0.0f;
 	m_topSpeed = topSpeed;
 }
 

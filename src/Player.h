@@ -9,6 +9,7 @@ private:
 	float m_speed;
 	float m_topSpeed;
 public:
+	Player();
 	Player(float topSpeed);
 	float GetRot();
 	void SetRot(float rot);
