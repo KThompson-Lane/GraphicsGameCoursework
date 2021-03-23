@@ -1,5 +1,9 @@
 #include "Game.h"
+#include <irrKlang/include/irrKlang.h>
 
+
+
+irrklang::ISoundEngine* SoundEngine = irrklang::createIrrKlangDevice();
 
 Game::Game(unsigned int width, unsigned int height)
 {
@@ -16,8 +20,8 @@ Game::~Game()
 void Game::Init()
 {
 	FreeImage_Initialise();
-
-	glClearColor(39/255,174/255, 96/255, 0.0);						//sets the clear colour to whatever RGB values passed in, normalized between 0 and 1 
+	
+	glClearColor((39.0f/255.0f),(174.0f/255.0f), (96.0f/255.0f), 0.0);						//sets the clear colour to whatever RGB values passed in, normalized between 0 and 1 
 
 	//Load the GLSL program 
 	if (!shader.load("Basic", "./glslfiles/basicTexture.vert", "./glslfiles/basicTexture.frag"))
@@ -31,8 +35,8 @@ void Game::Init()
 	float red[3] = { 1,0,0 };
 
 	player.Init(shader, red, "textures/car.png");
-	//player.IncPos(-70, 70);
-	//player.IncRot(3.14);
+	player.IncPos(-30,0);
+	player.IncRot(3.14/2);
 	myOtherSquare.SetWidth(200.0f);
 	myOtherSquare.SetHeight(200.0f);
 	myOtherSquare.Init(shader, red, "textures/background.png");
@@ -45,6 +49,9 @@ void Game::Init()
 	{
 		trackTile.Init(shader, red);
 	}
+	SoundEngine->setSoundVolume(0.7f);
+	SoundEngine->play2D("music/everything.mp3", true);
+
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 

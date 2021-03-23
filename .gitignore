@@ -1,6 +1,8 @@
 # Folders
 .vs/*
 x64/*
+irrKlang/*
+music/*
 
 # Prerequisites
 *.d
