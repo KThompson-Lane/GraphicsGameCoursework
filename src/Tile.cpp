@@ -85,6 +85,31 @@ void Tile::setYPos(float y)
 	m_ypos = y;
 }
 
+float Tile::getXPos()
+{
+	return m_xpos;
+}
+
+float Tile::getYPos()
+{
+	return m_ypos;
+}
+
+void Tile::setOBB(glm::vec2 bottomLeft, glm::vec2 bottomRight, glm::vec2 topRight, glm::vec2 topLeft)
+{
+	obb.vertOriginal[0].x = bottomLeft.x; //bottom left corner of the sprite
+	obb.vertOriginal[0].y = bottomLeft.y;
+
+	obb.vertOriginal[1].x = bottomRight.x; 
+	obb.vertOriginal[1].y = bottomRight.y;
+
+	obb.vertOriginal[2].x = topRight.x;
+	obb.vertOriginal[2].y = topRight.y;
+
+	obb.vertOriginal[3].x = topLeft.x;
+	obb.vertOriginal[3].y = topLeft.y;
+}
+
 float Tile::GetWidth()
 {
 	return m_Width;
@@ -112,7 +137,7 @@ void Tile::Init(Shader& shader, float colour[3])
 
 	/********INIT CORNERS FOR OBB***********/
 
-	obb.vertOriginal[0].x = -halfWidth;
+	obb.vertOriginal[0].x = -halfWidth; //bottom left corner of the sprite
 	obb.vertOriginal[0].y = -halfHeight;
 
 	obb.vertOriginal[1].x = halfWidth;
@@ -130,17 +155,29 @@ void Tile::Init(Shader& shader, float colour[3])
 	float tex[12];
 	//U left V right (U = x V = Y)
 
-	tex[0] = (m_tileOffsetX * m_tileSizeX) / m_sheetWidth;	 tex[1] = ((m_tileOffsetY + 1) * m_tileSizeY) / m_sheetHeight; //top left (i.e. 0,1)
-	tex[2] = (m_tileOffsetX * m_tileSizeX) / m_sheetWidth;	 tex[3] = (m_tileOffsetY * m_tileSizeY) / m_sheetHeight; //bottom left(i.e. 0,1)
-	tex[4] = ((m_tileOffsetX + 1) * m_tileSizeX) / m_sheetWidth;	 tex[5] = (m_tileOffsetY * m_tileSizeY) / m_sheetHeight; //bottom right(i.e. 0,1)
+	tex[0] = ((m_tileOffsetX * m_tileSizeX)+1)/ m_sheetWidth;			 tex[1] = (((m_tileOffsetY + 1) * m_tileSizeY)-2) / m_sheetHeight; //top left (i.e. 0,1)
+	tex[2] = ((m_tileOffsetX * m_tileSizeX)+1) / m_sheetWidth;			 tex[3] = ((m_tileOffsetY * m_tileSizeY)+1) / m_sheetHeight; //bottom left(i.e. 0,1)
+	tex[4] = (((m_tileOffsetX + 1) * m_tileSizeX)-2) / m_sheetWidth;	 tex[5] = ((m_tileOffsetY * m_tileSizeY)+1) / m_sheetHeight; //bottom right(i.e. 0,1)
 
 	//tex[0] = 0.0f;	 tex[1] = 1.0; //top left
 	//tex[2] = 0.0f;	 tex[3] = 0.0; //bottom left
 	//tex[4] = 1.0f;	 tex[5] = 0.0; //bottom right
 
-	tex[6] = (m_tileOffsetX * m_tileSizeX) / m_sheetWidth;		 tex[7] = ((m_tileOffsetY + 1) * m_tileSizeY) / m_sheetHeight; //top left (i.e. 0,1)
-	tex[8] = ((m_tileOffsetX + 1) * m_tileSizeX) / m_sheetWidth;	 tex[9] = ((m_tileOffsetY + 1) * m_tileSizeY) / m_sheetHeight; //top right(i.e. 0,1)
-	tex[10] = ((m_tileOffsetX + 1) * m_tileSizeX) / m_sheetWidth;	 tex[11] = (m_tileOffsetY * m_tileSizeY) / m_sheetHeight; //bottom right(i.e. 0,1)
+	tex[6] = ((m_tileOffsetX * m_tileSizeX)+1) / m_sheetWidth;		     tex[7] = (((m_tileOffsetY + 1) * m_tileSizeY)-2) / m_sheetHeight; //top left (i.e. 0,1)
+	tex[8] = (((m_tileOffsetX + 1) * m_tileSizeX)-2) / m_sheetWidth;	 tex[9] = (((m_tileOffsetY + 1) * m_tileSizeY)-2) / m_sheetHeight; //top right(i.e. 0,1)
+	tex[10] = (((m_tileOffsetX + 1) * m_tileSizeX)-2) / m_sheetWidth;	 tex[11] = ((m_tileOffsetY * m_tileSizeY)+1) / m_sheetHeight; //bottom right(i.e. 0,1)
+
+	//tex[0] = (m_tileOffsetX * m_tileSizeX) / m_sheetWidth;			 tex[1] = ((m_tileOffsetY + 1) * m_tileSizeY) / m_sheetHeight; //top left (i.e. 0,1)
+	//tex[2] = (m_tileOffsetX * m_tileSizeX) / m_sheetWidth;			 tex[3] = (m_tileOffsetY * m_tileSizeY) / m_sheetHeight; //bottom left(i.e. 0,1)
+	//tex[4] = ((m_tileOffsetX + 1) * m_tileSizeX) / m_sheetWidth;	 tex[5] = (m_tileOffsetY * m_tileSizeY) / m_sheetHeight; //bottom right(i.e. 0,1)
+
+	//tex[0] = 0.0f;	 tex[1] = 1.0; //top left
+	//tex[2] = 0.0f;	 tex[3] = 0.0; //bottom left
+	//tex[4] = 1.0f;	 tex[5] = 0.0; //bottom right
+
+	//tex[6] = (m_tileOffsetX * m_tileSizeX) / m_sheetWidth;		     tex[7] = ((m_tileOffsetY + 1) * m_tileSizeY) / m_sheetHeight; //top left (i.e. 0,1)
+	//tex[8] = ((m_tileOffsetX + 1) * m_tileSizeX) / m_sheetWidth;	 tex[9] = ((m_tileOffsetY + 1) * m_tileSizeY) / m_sheetHeight; //top right(i.e. 0,1)
+	//tex[10] = ((m_tileOffsetX + 1) * m_tileSizeX) / m_sheetWidth;	 tex[11] = (m_tileOffsetY * m_tileSizeY) / m_sheetHeight; //bottom right(i.e. 0,1)
 
 	//tex[6] = 0.0f;	 tex[7] = 1.0;	//top left
 	//tex[8] = 1.0f;	 tex[9] = 1.0;	// top right

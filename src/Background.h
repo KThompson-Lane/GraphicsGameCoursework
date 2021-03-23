@@ -2,6 +2,7 @@
 #include "Tile.h"
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 class Background
 {
@@ -12,7 +13,8 @@ private:
 	std::unordered_map<char, Tile> m_TileLookup;
 public:
 	Background();
-	Tile tiles[900];
+	std::vector<Tile> dirtTiles;
+	std::vector<Tile> trackTiles;
 	void loadBackground(std::string file, float tileSizeX, float tileSizeY);
 	unsigned int GetMapWidth();
 	unsigned int GetMapHeight();

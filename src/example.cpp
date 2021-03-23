@@ -114,7 +114,7 @@ int main(int argc, char **argv)
 	glutCreateWindow("OpenGL FreeGLUT Example: Image loading");
 
 	glutReshapeFunc(reshape);
-
+	
 	//This initialises glew - it must be called after the window is created.
 	GLenum err = glewInit();
 	if (GLEW_OK != err)

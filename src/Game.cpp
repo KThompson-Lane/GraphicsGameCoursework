@@ -17,7 +17,7 @@ void Game::Init()
 {
 	FreeImage_Initialise();
 
-	glClearColor(0.0, 0.0, 0.0, 0.0);						//sets the clear colour to black
+	glClearColor(39/255,174/255, 96/255, 0.0);						//sets the clear colour to whatever RGB values passed in, normalized between 0 and 1 
 
 	//Load the GLSL program 
 	if (!shader.load("Basic", "./glslfiles/basicTexture.vert", "./glslfiles/basicTexture.frag"))
@@ -37,16 +37,26 @@ void Game::Init()
 	myOtherSquare.SetHeight(200.0f);
 	myOtherSquare.Init(shader, red, "textures/background.png");
 	bg.loadBackground("textures/spritesheet_tiles.png", 128.0f, 128.0f);
-	for (int i = 0; i < 900; i++)
+	for (Tile& dirtTile : bg.dirtTiles )
 	{
-		bg.tiles[i].Init(shader, red);
+		dirtTile.Init(shader, red);
+	}
+	for (Tile& trackTile : bg.trackTiles)
+	{
+		trackTile.Init(shader, red);
 	}
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void Game::Update(float dt)
 {
-
+	for (int i = 0; i < 900; i++)
+	{
+		/*if (bg.tiles[i].IsInCollision(player.GetOBB()))
+		{
+			std::cout << "colliding!";
+		}*/
+	}
 }
 
 void Game::ProcessInput(float dt)
@@ -129,14 +139,20 @@ void Game::Render()
 	//myOtherSquare.Render(shader, ViewMatrix, ProjectionMatrix);
 
 	ModelViewMatrix = glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0);
-	for (int i = 0; i < 900; i++)
+	for (Tile& dirtTile : bg.dirtTiles)
 	{
-		ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(((i % bg.GetMapWidth())*bg.tiles[i].GetWidth() - bg.GetMapWidth()),(bg.GetMapHeight() -(((i/ bg.GetMapHeight())*bg.tiles[i].GetHeight()) - bg.GetMapHeight())),0.0));
+		ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(((dirtTile.getXPos())*dirtTile.GetWidth() - bg.GetMapWidth()),(bg.GetMapHeight() -(((dirtTile.getYPos())*dirtTile.GetHeight()) - bg.GetMapHeight())),0.0));
 		glm::mat4 ModelViewMatrix = glm::translate(getViewMatrix(), glm::vec3(player.GetXPos(), player.GetYPos(), 0.0));
-		bg.tiles[i].Render(shader, ModelViewMatrix, ProjectionMatrix);
+		dirtTile.Render(shader, ModelViewMatrix, ProjectionMatrix);
 	}
-
 	glEnable(GL_BLEND);
+
+	for (Tile& trackTile : bg.trackTiles)
+	{
+		ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(((trackTile.getXPos()) * trackTile.GetWidth() - bg.GetMapWidth()), (bg.GetMapHeight() - (((trackTile.getYPos()) * trackTile.GetHeight()) - bg.GetMapHeight())), 0.0));
+		glm::mat4 ModelViewMatrix = glm::translate(getViewMatrix(), glm::vec3(player.GetXPos(), player.GetYPos(), 0.0));
+		trackTile.Render(shader, ModelViewMatrix, ProjectionMatrix);
+	}
 	ModelViewMatrix = glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0);
 	ModelViewMatrix = glm::rotate(ModelViewMatrix, player.GetRot(), glm::vec3(0.0, 0.0, 1.0));
 	player.Render(shader, ModelViewMatrix, ProjectionMatrix);
