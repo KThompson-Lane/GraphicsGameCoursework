@@ -130,6 +130,7 @@ void Background::loadBackground(std::string file, float tileSizeX, float tileSiz
 				Tile temp = m_TileLookup[tileType];
 				temp.setXPos(x);
 				temp.setYPos(y);
+				temp.setID(tileType);
 				trackTiles.push_back(temp);
 				//std::cout << "inserting dirt";
 			}

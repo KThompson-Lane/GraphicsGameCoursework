@@ -18,7 +18,7 @@ private:
 	float m_sheetWidth;
 	float m_sheetHeight;
 	GLuint m_TexName;
-
+	char m_id;
 	unsigned int m_vaoID;		// id for Vertex Array Object
 	unsigned int m_vboID[3];	// ids for Vertex Buffer Objects
 	unsigned int m_NumberOfVerts;//number of vertices in the object
@@ -37,13 +37,15 @@ public:
 	Tile(int tileOffsetX, int tileOffsetY, float tileSizeX, float tileSizeY, GLuint bgTextureName);
 	Tile(float x, float y, int tileOffsetX, int tileOffsetY, float tileSizeX, float tileSizeY, GLuint bgTextureName);
 	Tile(float x, float y, int tileOffsetX, int tileOffsetY, float tileSizeX, float tileSizeY, float sheetWidth, float sheetHeight, GLuint bgTextureName);
+	void setID(char id);
+	char getID();
 	void setXPos(float x);
 	void setYPos(float y);
 	float getXPos();
 	float getYPos();
 	float GetWidth();
 	float GetHeight();
-	void setOBB(glm::vec2 bottomLeft, glm::vec2 bottomRight, glm::vec2 topRight, glm::vec2 topLeft);
+	void setOBB();
 	void Init(Shader& shader, float colour[3]);
 	void Render(Shader& shader, glm::mat4& ModelViewMatrix, glm::mat4& ProjectionMatrix);
 	OBB& GetOBB();

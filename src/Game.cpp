@@ -49,20 +49,21 @@ void Game::Init()
 	{
 		trackTile.Init(shader, red);
 	}
-	SoundEngine->setSoundVolume(0.7f);
-	SoundEngine->play2D("music/everything.mp3", true);
+	//SoundEngine->setSoundVolume(0.5f);
+	//SoundEngine->play2D("music/everything.mp3", true);
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void Game::Update(float dt)
 {
-	for (int i = 0; i < 900; i++)
+	for (Tile& trackTile : bg.trackTiles)
 	{
-		/*if (bg.tiles[i].IsInCollision(player.GetOBB()))
+		if (trackTile.getID() == 'S' && trackTile.IsInCollision(player.GetOBB()))
 		{
-			std::cout << "colliding!";
-		}*/
+			std::cout << "COLLISION!";
+			player.SetSpeed(-player.GetSpeed());
+		}
 	}
 }
 

@@ -1,5 +1,5 @@
 #include "Tile.h"
-
+#include <iostream>
 Tile::Tile()
 {
 	this->m_tileOffsetX = 0;
@@ -75,6 +75,14 @@ Tile::Tile(float x, float y, int tileOffsetX, int tileOffsetY, float tileSizeX, 
 	m_sheetWidth = sheetWidth;
 	m_sheetHeight = sheetHeight;
 }
+void Tile::setID(char id)
+{
+	m_id = id;
+}
+char Tile::getID()
+{
+	return m_id;
+}
 void Tile::setXPos(float x)
 {
 	m_xpos = x;
@@ -95,8 +103,30 @@ float Tile::getYPos()
 	return m_ypos;
 }
 
-void Tile::setOBB(glm::vec2 bottomLeft, glm::vec2 bottomRight, glm::vec2 topRight, glm::vec2 topLeft)
+void Tile::setOBB()
 {
+	glm::vec2 bottomLeft;
+	glm::vec2 bottomRight;
+	glm::vec2 topLeft;
+	glm::vec2 topRight;
+	float halfWidth = m_Width / 2.0f;
+	float halfHeight = m_Height / 2.0f;
+	switch (getID())
+	{
+		case 'S':
+			bottomLeft = { -(halfWidth), -(halfHeight) };
+			bottomRight = { (halfWidth), - (halfHeight) };
+			topLeft = { -(halfWidth), (-(halfHeight) + (0.15625 * 20))};
+			topRight = { (halfWidth), (-(halfHeight) +(0.15625 * 20))};
+			break;
+		default :
+			bottomLeft = { -(halfWidth), -(halfHeight) };
+			bottomRight = { (halfWidth), -(halfHeight) };
+			topLeft = { -(halfWidth), (halfHeight) };
+			topRight = { (halfWidth), (halfHeight) };
+			break;
+	}
+
 	obb.vertOriginal[0].x = bottomLeft.x; //bottom left corner of the sprite
 	obb.vertOriginal[0].y = bottomLeft.y;
 
@@ -135,21 +165,8 @@ void Tile::Init(Shader& shader, float colour[3])
 	vert[12] = halfWidth; vert[13] = halfHeight; vert[14] = 0.0;
 	vert[15] = halfWidth; vert[16] = -halfHeight; vert[17] = 0.0;
 
-	/********INIT CORNERS FOR OBB***********/
-
-	obb.vertOriginal[0].x = -halfWidth; //bottom left corner of the sprite
-	obb.vertOriginal[0].y = -halfHeight;
-
-	obb.vertOriginal[1].x = halfWidth;
-	obb.vertOriginal[1].y = -halfHeight;
-
-	obb.vertOriginal[2].x = halfWidth;
-	obb.vertOriginal[2].y = halfHeight;
-
-	obb.vertOriginal[3].x = -halfWidth;
-	obb.vertOriginal[3].y = halfHeight;
-
-	/*******************/
+	//setup obb
+	setOBB();
 
 
 	float tex[12];
