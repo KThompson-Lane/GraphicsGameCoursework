@@ -172,13 +172,15 @@ void Tile::Init(Shader& shader, float colour[3])
 	float tex[12];
 	//U left V right (U = x V = Y)
 
+	//tex[0] = 0.0f;	 tex[1] = 1.0; //top left
+	//tex[2] = 0.0f;	 tex[3] = 0.0; //bottom left
+	//tex[4] = 1.0f;	 tex[5] = 0.0; //bottom right
+
 	tex[0] = ((m_tileOffsetX * m_tileSizeX)+1)/ m_sheetWidth;			 tex[1] = (((m_tileOffsetY + 1) * m_tileSizeY)-2) / m_sheetHeight; //top left (i.e. 0,1)
 	tex[2] = ((m_tileOffsetX * m_tileSizeX)+1) / m_sheetWidth;			 tex[3] = ((m_tileOffsetY * m_tileSizeY)+1) / m_sheetHeight; //bottom left(i.e. 0,1)
 	tex[4] = (((m_tileOffsetX + 1) * m_tileSizeX)-2) / m_sheetWidth;	 tex[5] = ((m_tileOffsetY * m_tileSizeY)+1) / m_sheetHeight; //bottom right(i.e. 0,1)
 
-	//tex[0] = 0.0f;	 tex[1] = 1.0; //top left
-	//tex[2] = 0.0f;	 tex[3] = 0.0; //bottom left
-	//tex[4] = 1.0f;	 tex[5] = 0.0; //bottom right
+
 
 	tex[6] = ((m_tileOffsetX * m_tileSizeX)+1) / m_sheetWidth;		     tex[7] = (((m_tileOffsetY + 1) * m_tileSizeY)-2) / m_sheetHeight; //top left (i.e. 0,1)
 	tex[8] = (((m_tileOffsetX + 1) * m_tileSizeX)-2) / m_sheetWidth;	 tex[9] = (((m_tileOffsetY + 1) * m_tileSizeY)-2) / m_sheetHeight; //top right(i.e. 0,1)

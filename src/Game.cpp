@@ -4,7 +4,7 @@
 
 
 irrklang::ISoundEngine* SoundEngine = irrklang::createIrrKlangDevice();
-
+int count = 0;
 Game::Game(unsigned int width, unsigned int height)
 {
 	player.SetTopSpeed(0.08f);
@@ -35,7 +35,9 @@ void Game::Init()
 	float red[3] = { 1,0,0 };
 
 	player.Init(shader, red, "textures/car.png");
-	player.IncPos(-30,0);
+	player.SetXpos(-20 * 3);
+	player.IncPos(0,-30);
+	player.IncPos(0,20 * 3);
 	player.IncRot(3.14/2);
 	myOtherSquare.SetWidth(200.0f);
 	myOtherSquare.SetHeight(200.0f);
@@ -45,9 +47,9 @@ void Game::Init()
 	{
 		dirtTile.Init(shader, red);
 	}
-	for (Tile& trackTile : bg.trackTiles)
+	for (auto& it : bg.trackTiles)
 	{
-		trackTile.Init(shader, red);
+		it.second.Init(shader, red);
 	}
 	//SoundEngine->setSoundVolume(0.5f);
 	//SoundEngine->play2D("music/everything.mp3", true);
@@ -57,14 +59,44 @@ void Game::Init()
 
 void Game::Update(float dt)
 {
-	for (Tile& trackTile : bg.trackTiles)
+	if (PlayersCurrentTile().getID() == 'S' && PlayersCurrentTile().IsInCollision(player.GetOBB()))
 	{
-		if (trackTile.getID() == 'S' && trackTile.IsInCollision(player.GetOBB()))
+		std::cout << "COLLISION!";
+		player.SetSpeed(-player.GetSpeed());
+
+	}
+	/*for (auto& it : bg.trackTiles)
+	{
+		if (it.second.getID() == 'S' && it.second.IsInCollision(player.GetOBB()))
 		{
 			std::cout << "COLLISION!";
 			player.SetSpeed(-player.GetSpeed());
 		}
+		if (it.second.getID() == 'X' && count == 480)
+		{
+			std::cout << (std::round(-player.GetXPos() / 20));
+			if (std::round(-player.GetXPos() / 20) == it.second.getXPos() && std::round((player.GetYPos() + 30) / 20) == it.second.getYPos())
+			{
+				std::cout << "IS IN TILE";
+			}
+		}
 	}
+	if (count == 480)
+	{
+		std::cout << player.GetXPos() << "X : " << player.GetYPos() << "Y" << std::endl;
+		count = 0;
+	}
+	else
+	{
+		count++;
+	}*/
+	
+}
+
+Tile& Game::PlayersCurrentTile()
+{
+	glm::vec2 tilePos = { std::round(-player.GetXPos() / 20), std::round((player.GetYPos() + 30) / 20) };
+	return bg.trackTiles[tilePos];
 }
 
 void Game::ProcessInput(float dt)
@@ -149,17 +181,17 @@ void Game::Render()
 	ModelViewMatrix = glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0);
 	for (Tile& dirtTile : bg.dirtTiles)
 	{
-		ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(((dirtTile.getXPos())*dirtTile.GetWidth() - bg.GetMapWidth()),(bg.GetMapHeight() -(((dirtTile.getYPos())*dirtTile.GetHeight()) - bg.GetMapHeight())),0.0));
+		ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(dirtTile.getXPos() * dirtTile.GetWidth(), (bg.GetMapHeight() - (dirtTile.getYPos() * dirtTile.GetHeight())), 0.0));
 		glm::mat4 ModelViewMatrix = glm::translate(getViewMatrix(), glm::vec3(player.GetXPos(), player.GetYPos(), 0.0));
 		dirtTile.Render(shader, ModelViewMatrix, ProjectionMatrix);
 	}
 	glEnable(GL_BLEND);
 
-	for (Tile& trackTile : bg.trackTiles)
+	for (auto& it: bg.trackTiles)
 	{
-		ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(((trackTile.getXPos()) * trackTile.GetWidth() - bg.GetMapWidth()), (bg.GetMapHeight() - (((trackTile.getYPos()) * trackTile.GetHeight()) - bg.GetMapHeight())), 0.0));
+		ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(it.second.getXPos() * it.second.GetWidth(), (bg.GetMapHeight() - (it.second.getYPos() * it.second.GetHeight())), 0.0));
 		glm::mat4 ModelViewMatrix = glm::translate(getViewMatrix(), glm::vec3(player.GetXPos(), player.GetYPos(), 0.0));
-		trackTile.Render(shader, ModelViewMatrix, ProjectionMatrix);
+		it.second.Render(shader, ModelViewMatrix, ProjectionMatrix);
 	}
 	ModelViewMatrix = glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0);
 	ModelViewMatrix = glm::rotate(ModelViewMatrix, player.GetRot(), glm::vec3(0.0, 0.0, 1.0));

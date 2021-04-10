@@ -28,6 +28,7 @@ public:
 	void Init();
 	void ProcessInput(float dt);
 	void Update(float dt);
+	Tile& PlayersCurrentTile();
 	void Render();
 	void setLeft(bool left);
 	void setRight(bool right);

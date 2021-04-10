@@ -83,6 +83,7 @@ void Background::loadBackground(std::string file, float tileSizeX, float tileSiz
 	m_TileLookup.emplace('W', topEnd);
 	m_TileLookup.emplace('A', leftEnd);
 	m_TileLookup.emplace('S', bottomEnd);
+	m_TileLookup.emplace('X', bottomEnd);
 	m_TileLookup.emplace('D', rightEnd);
 
 	m_TileLookup.emplace('Q', topLeft);
@@ -131,13 +132,15 @@ void Background::loadBackground(std::string file, float tileSizeX, float tileSiz
 				temp.setXPos(x);
 				temp.setYPos(y);
 				temp.setID(tileType);
-				trackTiles.push_back(temp);
+				glm::vec2 coords = { x,y };
+				trackTiles.emplace(coords, temp);
 				//std::cout << "inserting dirt";
 			}
 			else
 			{
 				std::cout << "can't find texture";
-				trackTiles.push_back(dirt);
+				glm::vec2 coords = { x,y };
+				trackTiles.emplace(coords, dirt);
 			}
 		}
 	}
