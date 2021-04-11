@@ -35,6 +35,8 @@ void Game::Init()
 	float red[3] = { 1,0,0 };
 
 	player.Init(shader, red, "textures/car.png");
+	//player.SetXpos(-530.0f);
+	//player.SetYpos(20.0f);
 	player.SetXpos(-20 * 3);
 	player.IncPos(0,-30);
 	player.IncPos(0,20 * 3);
@@ -59,39 +61,75 @@ void Game::Init()
 
 void Game::Update(float dt)
 {
-	if (PlayersCurrentTile().getID() == 'S' && PlayersCurrentTile().IsInCollision(player.GetOBB()))
+	float xDist = 0.0f;
+	float yDist = 0.0f;
+	float temp = 0.0f;
+	switch (PlayersCurrentTile().getID())
 	{
-		std::cout << "COLLISION!";
-		player.SetSpeed(-player.GetSpeed());
-
-	}
-	/*for (auto& it : bg.trackTiles)
-	{
-		if (it.second.getID() == 'S' && it.second.IsInCollision(player.GetOBB()))
+	case 'S':
+		if (player.GetYPos() > (PlayersCurrentTile().getYPos() * 20) - 25)
 		{
-			std::cout << "COLLISION!";
 			player.SetSpeed(-player.GetSpeed());
 		}
-		if (it.second.getID() == 'X' && count == 480)
+		break;
+	case 'W':
+		if (player.GetYPos() < (PlayersCurrentTile().getYPos() * 20) - 35)
 		{
-			std::cout << (std::round(-player.GetXPos() / 20));
-			if (std::round(-player.GetXPos() / 20) == it.second.getXPos() && std::round((player.GetYPos() + 30) / 20) == it.second.getYPos())
-			{
-				std::cout << "IS IN TILE";
-			}
+			player.SetSpeed(-player.GetSpeed());
 		}
+		break;
+	case 'D':
+		if (-player.GetXPos() > (PlayersCurrentTile().getXPos() * 20) + 5)
+		{
+			player.SetSpeed(-player.GetSpeed());
+		}
+		break;
+	case 'A':
+		if (-player.GetXPos() < (PlayersCurrentTile().getXPos() * 20) - 5)
+		{
+			player.SetSpeed(-player.GetSpeed());
+		}
+		break;
+	case 'R':
+		//check collision
+		xDist = (((PlayersCurrentTile().getXPos() * 20) - 10) - (-player.GetXPos()));
+		yDist = ((player.GetYPos()) - ((PlayersCurrentTile().getYPos() * 20) - 20));
+		temp = sqrt((xDist * xDist) + (yDist * yDist));
+		if (temp > 15.0f)
+		{
+			std::cout << "OUTSIDE BOUNDS";
+			player.SetSpeed(-player.GetSpeed());
+
+		}
+		break;
+	case 'V':
+		//check collision
+		xDist = (((PlayersCurrentTile().getXPos() * 20) - 10) - (-player.GetXPos()));
+		yDist = ((player.GetYPos()) - ((PlayersCurrentTile().getYPos() * 20) - 40));
+		temp = sqrt((xDist * xDist) + (yDist * yDist));
+		if (temp > 15.0f)
+		{
+			std::cout << "OUTSIDE BOUNDS";
+			player.SetSpeed(-player.GetSpeed());
+
+		}
+		break;
+
+	case 'Z':
+		//check collision
+		xDist = (((PlayersCurrentTile().getXPos() * 20) + 10) - (-player.GetXPos()));
+		yDist = ((player.GetYPos()) - ((PlayersCurrentTile().getYPos() * 20) - 40));
+		temp = sqrt((xDist * xDist) + (yDist * yDist));
+		if (temp > 15.0f)
+		{
+			std::cout << "OUTSIDE BOUNDS";
+			player.SetSpeed(-player.GetSpeed());
+
+		}
+		break;
 	}
-	if (count == 480)
-	{
-		std::cout << player.GetXPos() << "X : " << player.GetYPos() << "Y" << std::endl;
-		count = 0;
-	}
-	else
-	{
-		count++;
-	}*/
-	
 }
+
 
 Tile& Game::PlayersCurrentTile()
 {
