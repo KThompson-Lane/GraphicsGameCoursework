@@ -1,15 +1,10 @@
 #pragma once
 
 #include <string>
-
 #include "..\glm\glm.hpp"
-
 #include "..\glm\gtc\matrix_transform.hpp"
 #include "..\gl\glew.h"
-
 #include "..\shaders\Shader.h"
-#include "OBB.h"
-
 class Tile
 {
 private:
@@ -24,7 +19,7 @@ private:
 	unsigned int m_vaoID;		// id for Vertex Array Object
 	unsigned int m_vboID[3];	// ids for Vertex Buffer Objects
 	unsigned int m_NumberOfVerts;//number of vertices in the object
-
+	//add a checkpoint object 
 	//Dimensions of the sprite.
 	float m_Width;
 	float m_Height;
@@ -32,8 +27,6 @@ private:
 	//position of the sprite
 	float m_xpos;
 	float m_ypos;
-	OBB obb; //obb object for oriented bounding box collision
-
 public:
 	Tile();
 	Tile(int tileOffsetX, int tileOffsetY, float tileSizeX, float tileSizeY, GLuint bgTextureName);
@@ -47,11 +40,8 @@ public:
 	float getYPos();
 	float GetWidth();
 	float GetHeight();
-	void setOBB();
 	void Init(Shader& shader, float colour[3]);
 	void Render(Shader& shader, glm::mat4& ModelViewMatrix, glm::mat4& ProjectionMatrix);
-	OBB& GetOBB();
-	bool IsInCollision(OBB& anotherOBB);
 }; 
 
 

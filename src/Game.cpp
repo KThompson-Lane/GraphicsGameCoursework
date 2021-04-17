@@ -44,7 +44,7 @@ void Game::Init()
 	myOtherSquare.SetWidth(200.0f);
 	myOtherSquare.SetHeight(200.0f);
 	myOtherSquare.Init(shader, red, "textures/background.png");
-	bg.loadBackground("textures/spritesheet_tiles.png", 128.0f, 128.0f);
+	bg.loadBackground();
 	for (Tile& dirtTile : bg.dirtTiles )
 	{
 		dirtTile.Init(shader, red);
@@ -53,8 +53,12 @@ void Game::Init()
 	{
 		it.second.Init(shader, red);
 	}
-	//SoundEngine->setSoundVolume(0.5f);
-	//SoundEngine->play2D("music/everything.mp3", true);
+	for (auto& it : bg.checkpoints)
+	{
+		it.second.Init(shader, red);
+	}
+	SoundEngine->setSoundVolume(0.5f);
+	SoundEngine->play2D("music/everything.mp3", true);
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
@@ -64,14 +68,19 @@ void Game::Update(float dt)
 	float xDist = 0.0f;
 	float yDist = 0.0f;
 	float temp = 0.0f;
+	glm::vec2 coords;
 	switch (PlayersCurrentTile().getID())
 	{
+	case 'P':
+		CompleteLap();
 	case 'S':
 		if (player.GetYPos() > (PlayersCurrentTile().getYPos() * 20) - 25)
 		{
 			player.SetSpeed(-player.GetSpeed());
 		}
 		break;
+	case 'N':
+		CompleteLap();
 	case 'W':
 		if (player.GetYPos() < (PlayersCurrentTile().getYPos() * 20) - 35)
 		{
@@ -127,9 +136,94 @@ void Game::Update(float dt)
 
 		}
 		break;
+
+	case 'Q':
+		//check collision
+		xDist = (((PlayersCurrentTile().getXPos() * 20) + 10) - (-player.GetXPos()));
+		yDist = ((player.GetYPos()) - ((PlayersCurrentTile().getYPos() * 20) - 20));
+		temp = sqrt((xDist * xDist) + (yDist * yDist));
+		if (temp > 15.0f)
+		{
+			std::cout << "OUTSIDE BOUNDS";
+			player.SetSpeed(-player.GetSpeed());
+
+		}
+		break;
+	}
+	glm::vec2 tilePos = { std::round(-player.GetXPos() / 20), std::round((player.GetYPos() + 30) / 20) };
+	switch(bg.checkpoints[tilePos].getType())
+	{
+	case 'e':
+	case 'a':
+		//activate this tile and the one below it
+		if (bg.checkpoints[tilePos].isActive())
+		{
+			break;
+		}
+		bg.checkpoints[tilePos].Activate();
+		coords.x = tilePos.x;
+		coords.y = tilePos.y + 1;
+		bg.checkpoints[coords].Activate();
+		checkpointsCompleted += 2;
+		break;
+	case 'f':
+	case 'b':
+		//activate this tile and the one above it
+		if (bg.checkpoints[tilePos].isActive())
+		{
+			break;
+		}
+		bg.checkpoints[tilePos].Activate();
+		coords.x = tilePos.x;
+		coords.y = tilePos.y - 1;
+		bg.checkpoints[coords].Activate();
+		checkpointsCompleted += 2;
+		break;
+	case 'g':
+	case 'c':
+		//activate this tile and the one right of it
+		if (bg.checkpoints[tilePos].isActive())
+		{
+			break;
+		}
+		bg.checkpoints[tilePos].Activate();
+		coords.x = tilePos.x + 1;
+		coords.y = tilePos.y;
+		bg.checkpoints[coords].Activate();
+		checkpointsCompleted += 2;
+		break;
+	case 'h':
+	case 'd':
+		//activate this tile and the one left of it
+		if (bg.checkpoints[tilePos].isActive())
+		{
+			break;
+		}
+		bg.checkpoints[tilePos].Activate();
+		coords.x = tilePos.x - 1;
+		coords.y = tilePos.y;
+		bg.checkpoints[coords].Activate();
+		checkpointsCompleted += 2;
+		break;
 	}
 }
 
+void Game::CompleteLap()
+{
+	if (checkpointsCompleted == 62)
+	{
+		gameOver = true;
+		for (auto& it : bg.checkpoints)
+		{
+			it.second.Reset();
+		}
+		checkpointsCompleted = 0;
+	}
+	else
+	{
+		std::cout << checkpointsCompleted;
+	}
+}
 
 Tile& Game::PlayersCurrentTile()
 {
@@ -227,6 +321,16 @@ void Game::Render()
 
 	for (auto& it: bg.trackTiles)
 	{
+		ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(it.second.getXPos() * it.second.GetWidth(), (bg.GetMapHeight() - (it.second.getYPos() * it.second.GetHeight())), 0.0));
+		glm::mat4 ModelViewMatrix = glm::translate(getViewMatrix(), glm::vec3(player.GetXPos(), player.GetYPos(), 0.0));
+		it.second.Render(shader, ModelViewMatrix, ProjectionMatrix);
+	}
+	for (auto& it : bg.checkpoints)
+	{
+		if(it.second.isActive())
+		{
+			continue;
+		}
 		ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(it.second.getXPos() * it.second.GetWidth(), (bg.GetMapHeight() - (it.second.getYPos() * it.second.GetHeight())), 0.0));
 		glm::mat4 ModelViewMatrix = glm::translate(getViewMatrix(), glm::vec3(player.GetXPos(), player.GetYPos(), 0.0));
 		it.second.Render(shader, ModelViewMatrix, ProjectionMatrix);

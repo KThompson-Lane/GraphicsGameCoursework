@@ -45,7 +45,7 @@ void reshape(int width, int height)		// Resize the OpenGL window
 
 	glViewport(0,0, width, height);						// set Viewport dimensions
 
-	racingGame.setProjMatrix((glm::ortho(width / -25.0, width / 25.0, height / -25.0, height / 25.0)));
+	racingGame.setProjMatrix((glm::ortho(width / -40.0, width / 40.0, height / -40.0, height / 40.0)));
 }
 
 

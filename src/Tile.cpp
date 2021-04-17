@@ -1,5 +1,4 @@
 #include "Tile.h"
-#include <iostream>
 Tile::Tile()
 {
 	this->m_tileOffsetX = 0;
@@ -103,43 +102,6 @@ float Tile::getYPos()
 	return m_ypos;
 }
 
-void Tile::setOBB()
-{
-	glm::vec2 bottomLeft;
-	glm::vec2 bottomRight;
-	glm::vec2 topLeft;
-	glm::vec2 topRight;
-	float halfWidth = m_Width / 2.0f;
-	float halfHeight = m_Height / 2.0f;
-	switch (getID())
-	{
-		case 'S':
-			bottomLeft = { -(halfWidth), -(halfHeight) };
-			bottomRight = { (halfWidth), - (halfHeight) };
-			topLeft = { -(halfWidth), (-(halfHeight) + (0.15625 * 20))};
-			topRight = { (halfWidth), (-(halfHeight) +(0.15625 * 20))};
-			break;
-		default :
-			bottomLeft = { -(halfWidth), -(halfHeight) };
-			bottomRight = { (halfWidth), -(halfHeight) };
-			topLeft = { -(halfWidth), (halfHeight) };
-			topRight = { (halfWidth), (halfHeight) };
-			break;
-	}
-
-	obb.vertOriginal[0].x = bottomLeft.x; //bottom left corner of the sprite
-	obb.vertOriginal[0].y = bottomLeft.y;
-
-	obb.vertOriginal[1].x = bottomRight.x; 
-	obb.vertOriginal[1].y = bottomRight.y;
-
-	obb.vertOriginal[2].x = topRight.x;
-	obb.vertOriginal[2].y = topRight.y;
-
-	obb.vertOriginal[3].x = topLeft.x;
-	obb.vertOriginal[3].y = topLeft.y;
-}
-
 float Tile::GetWidth()
 {
 	return m_Width;
@@ -164,9 +126,6 @@ void Tile::Init(Shader& shader, float colour[3])
 	vert[9] = -halfWidth; vert[10] = halfHeight; vert[11] = 0.0;
 	vert[12] = halfWidth; vert[13] = halfHeight; vert[14] = 0.0;
 	vert[15] = halfWidth; vert[16] = -halfHeight; vert[17] = 0.0;
-
-	//setup obb
-	setOBB();
 
 
 	float tex[12];
@@ -240,9 +199,6 @@ void Tile::Init(Shader& shader, float colour[3])
 
 void Tile::Render(Shader & shader, glm::mat4 & ModelViewMatrix, glm::mat4 & ProjectionMatrix)
 {
-	/****UPDATE THE CORNER VALUES BASED ON TRANSFORMATION***/
-	obb.transformPoints(ModelViewMatrix);
-	/*******************************************************/
 
 	glUseProgram(shader.handle());  // use the shader
 
@@ -264,21 +220,3 @@ void Tile::Render(Shader & shader, glm::mat4 & ModelViewMatrix, glm::mat4 & Proj
 	glBindVertexArray(0); //unbind the vertex array object
 	glUseProgram(0); //turn off the current shader
 }
-
-OBB& Tile::GetOBB()
-{
-	return obb;
-}
-
-bool Tile::IsInCollision(OBB& anotherOBB)
-{
-	if (obb.SAT2D(anotherOBB))
-	{
-		return true;
-	}
-	return false;
-}
-
-
-
-

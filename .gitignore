@@ -543,3 +543,6 @@ x64/Release/textures/background.png
 x64/Release/textures/car.png
 x64/Release/textures/character.png
 x64/Release/vc142.pdb
+nlohmann/json.hpp
+*.png
+*.zip

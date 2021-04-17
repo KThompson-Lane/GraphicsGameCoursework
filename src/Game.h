@@ -15,6 +15,8 @@ private:
 	bool Right = false;
 	bool Up = false;
 	bool Down = false;
+	bool gameOver = false;
+	int checkpointsCompleted;
 	Shader shader;
 	Player player;
 	Background bg;
@@ -28,6 +30,7 @@ public:
 	void Init();
 	void ProcessInput(float dt);
 	void Update(float dt);
+	void CompleteLap();
 	Tile& PlayersCurrentTile();
 	void Render();
 	void setLeft(bool left);
