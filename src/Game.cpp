@@ -57,8 +57,8 @@ void Game::Init()
 	{
 		it.second.Init(shader, red);
 	}
-	SoundEngine->setSoundVolume(0.5f);
-	SoundEngine->play2D("music/everything.mp3", true);
+	//SoundEngine->setSoundVolume(0.5f);
+	//SoundEngine->play2D("music/everything.mp3", true);
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
@@ -77,6 +77,7 @@ void Game::Update(float dt)
 		if (player.GetYPos() > (PlayersCurrentTile().getYPos() * 20) - 25)
 		{
 			player.SetSpeed(-player.GetSpeed());
+			player.IncPos(-(((player.GetSpeed())* dt) * sinf(player.GetRot())), (((player.GetSpeed())* dt) * cosf(player.GetRot())));
 		}
 		break;
 	case 'N':
@@ -85,18 +86,21 @@ void Game::Update(float dt)
 		if (player.GetYPos() < (PlayersCurrentTile().getYPos() * 20) - 35)
 		{
 			player.SetSpeed(-player.GetSpeed());
+			player.IncPos(-(((player.GetSpeed()) * dt) * sinf(player.GetRot())), (((player.GetSpeed()) * dt) * cosf(player.GetRot())));
 		}
 		break;
 	case 'D':
 		if (-player.GetXPos() > (PlayersCurrentTile().getXPos() * 20) + 5)
 		{
 			player.SetSpeed(-player.GetSpeed());
+			player.IncPos(-(((player.GetSpeed()) * dt) * sinf(player.GetRot())), (((player.GetSpeed()) * dt) * cosf(player.GetRot())));
 		}
 		break;
 	case 'A':
 		if (-player.GetXPos() < (PlayersCurrentTile().getXPos() * 20) - 5)
 		{
 			player.SetSpeed(-player.GetSpeed());
+			player.IncPos(-(((player.GetSpeed()) * dt) * sinf(player.GetRot())), (((player.GetSpeed()) * dt) * cosf(player.GetRot())));
 		}
 		break;
 	case 'R':
@@ -106,9 +110,8 @@ void Game::Update(float dt)
 		temp = sqrt((xDist * xDist) + (yDist * yDist));
 		if (temp > 15.0f)
 		{
-			std::cout << "OUTSIDE BOUNDS";
 			player.SetSpeed(-player.GetSpeed());
-
+			player.IncPos(-(((player.GetSpeed()) * dt) * sinf(player.GetRot())), (((player.GetSpeed()) * dt) * cosf(player.GetRot())));
 		}
 		break;
 	case 'V':
@@ -118,9 +121,8 @@ void Game::Update(float dt)
 		temp = sqrt((xDist * xDist) + (yDist * yDist));
 		if (temp > 15.0f)
 		{
-			std::cout << "OUTSIDE BOUNDS";
 			player.SetSpeed(-player.GetSpeed());
-
+			player.IncPos(-(((player.GetSpeed()) * dt) * sinf(player.GetRot())), (((player.GetSpeed()) * dt) * cosf(player.GetRot())));
 		}
 		break;
 
@@ -131,9 +133,8 @@ void Game::Update(float dt)
 		temp = sqrt((xDist * xDist) + (yDist * yDist));
 		if (temp > 15.0f)
 		{
-			std::cout << "OUTSIDE BOUNDS";
 			player.SetSpeed(-player.GetSpeed());
-
+			player.IncPos(-(((player.GetSpeed()) * dt) * sinf(player.GetRot())), (((player.GetSpeed()) * dt) * cosf(player.GetRot())));
 		}
 		break;
 
@@ -144,9 +145,8 @@ void Game::Update(float dt)
 		temp = sqrt((xDist * xDist) + (yDist * yDist));
 		if (temp > 15.0f)
 		{
-			std::cout << "OUTSIDE BOUNDS";
 			player.SetSpeed(-player.GetSpeed());
-
+			player.IncPos(-(((player.GetSpeed()) * dt) * sinf(player.GetRot())), (((player.GetSpeed()) * dt) * cosf(player.GetRot())));
 		}
 		break;
 	}
