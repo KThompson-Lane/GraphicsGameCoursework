@@ -92,6 +92,16 @@ void Tile::setYPos(float y)
 	m_ypos = y;
 }
 
+void Tile::setInstruction(char instruction)
+{
+	this->m_npcInstruction = instruction;
+}
+
+char Tile::getInstruction()
+{
+	return this->m_npcInstruction;
+}
+
 float Tile::getXPos()
 {
 	return m_xpos;

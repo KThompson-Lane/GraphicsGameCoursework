@@ -16,6 +16,7 @@ private:
 	float m_sheetHeight;
 	GLuint m_TexName;
 	char m_id;
+	char m_npcInstruction;
 	unsigned int m_vaoID;		// id for Vertex Array Object
 	unsigned int m_vboID[3];	// ids for Vertex Buffer Objects
 	unsigned int m_NumberOfVerts;//number of vertices in the object
@@ -36,6 +37,8 @@ public:
 	char getID();
 	void setXPos(float x);
 	void setYPos(float y);
+	void setInstruction(char instruction);
+	char getInstruction();
 	float getXPos();
 	float getYPos();
 	float GetWidth();

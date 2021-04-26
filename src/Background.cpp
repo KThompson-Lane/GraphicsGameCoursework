@@ -62,6 +62,7 @@ void Background::loadBackground()
 
 	static std::string s_MapTiles;
 	static std::string s_MapEntities;
+	static std::string s_npcInstructions;
 	nlohmann::json level;
 	std::ifstream myReadFile;
 	myReadFile.open("src/level.json");
@@ -74,7 +75,10 @@ void Background::loadBackground()
 	{
 		s_MapEntities += line;
 	}
-
+	for each (std::string line in level["npcInstructions"])
+	{
+		s_npcInstructions += line;
+	}
 	//yucky gross tile lookup table that i should never have made
 	Tile dirt(0.0f, 0.0f, 0, 8, 128.0f, 128.0f,2304.0f, 2304.0f, m_TrackSheetTex);
 	Tile track(0.0f, 0.0f, 4, 7, 128.0f, 128.0f, 2304.0f, 2304.0f, m_TrackSheetTex);
@@ -170,14 +174,15 @@ void Background::loadBackground()
 			dirt.setYPos(y);
 			dirtTiles.push_back(dirt);
 
-			char tileType = s_MapTiles[x + (y * m_MapWidth)];
-			//todo make entities work lol 
+			char tileType = s_MapTiles[x + (y * m_MapWidth)]; 
 			char entity = s_MapEntities[x + (y * m_MapWidth)];
+			char npcInstruction = s_npcInstructions[x + (y * m_MapWidth)];
+
 			if (m_TileLookup.find(tileType) != m_TileLookup.end())
 			{
 				if (entity == 'B' || entity == 'T')
 				{
-					//do nothing
+
 				}
 				else {
 					Checkpoint check = m_EntityLookup[entity];
@@ -197,6 +202,7 @@ void Background::loadBackground()
 				temp.setXPos(x);
 				temp.setYPos(y);
 				temp.setID(tileType);
+				temp.setInstruction(npcInstruction);
 				glm::vec2 coords = { x,y };
 				trackTiles.emplace(coords, temp);
 				//std::cout << "inserting dirt";

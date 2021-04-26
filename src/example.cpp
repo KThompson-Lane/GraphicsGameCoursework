@@ -45,13 +45,27 @@ void reshape(int width, int height)		// Resize the OpenGL window
 
 	glViewport(0,0, width, height);						// set Viewport dimensions
 
-	racingGame.setProjMatrix((glm::ortho(width / -40.0, width / 40.0, height / -40.0, height / 40.0)));
+	racingGame.setProjMatrix((glm::ortho(width / -40.0, width / 40.0, height / -40.0, height / 40.0))); //reset to 40
+
 }
 
 
 void display()									
 {
 	racingGame.Render();
+}
+void keyboard(unsigned char key, int x, int y)
+{
+
+}
+void keyboardUp(unsigned char key, int x, int y)
+{
+	switch (key)
+	{
+		case ' ':
+			racingGame.togglePause();
+			break;
+	}
 }
 
 void special(int key, int x, int y)
@@ -137,7 +151,8 @@ int main(int argc, char **argv)
 	glutDisplayFunc(display);
 
 	glutIdleFunc(idle);
-
+	glutKeyboardFunc(keyboard);
+	glutKeyboardUpFunc(keyboardUp);
 	glutSpecialFunc(special);
 	glutSpecialUpFunc(specialUp);
 	glutFullScreenToggle();
