@@ -5,7 +5,6 @@
 
 irrklang::ISoundEngine* SoundEngine = irrklang::createIrrKlangDevice();
 irrklang::ISound* EngineNoise;
-int count = 0;
 
 Game::Game(unsigned int width, unsigned int height)
 {
