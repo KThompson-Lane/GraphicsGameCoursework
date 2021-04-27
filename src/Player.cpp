@@ -24,7 +24,7 @@ void Player::SetRot(float rot)
 }
 void Player::IncRot(float rot)
 {
-	if (m_rot + rot < 0)
+	if (m_rot + rot <= 0)
 	{
 		m_rot = 6.28319;
 	}

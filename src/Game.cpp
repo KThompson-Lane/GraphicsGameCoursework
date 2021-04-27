@@ -4,6 +4,7 @@
 
 
 irrklang::ISoundEngine* SoundEngine = irrklang::createIrrKlangDevice();
+irrklang::ISound* EngineNoise;
 int count = 0;
 
 Game::Game(unsigned int width, unsigned int height)
@@ -51,7 +52,19 @@ void Game::Init()
 	player.IncPos(0,-30);
 	player.IncPos(0,20 * 3);
 	player.SetRot(1.5708f);
-	std::cout << player.GetTopSpeed();
+
+	pauseScreen.SetWidth(50.0f * (768.0f / 512.0f));
+	pauseScreen.SetHeight(50.0f);
+	pauseScreen.Init(shader, red, "textures/PauseScreen.png");
+
+	winScreen.SetWidth(50.0f * (768.0f / 512.0f));
+	winScreen.SetHeight(50.0f);
+	winScreen.Init(shader, red, "textures/WinScreen.png");
+
+	loseScreen.SetWidth(50.0f * (768.0f / 512.0f));
+	loseScreen.SetHeight(50.0f);
+	loseScreen.Init(shader, red, "textures/LoseScreen.png");
+
 	bg.loadBackground();
 	for (Tile& dirtTile : bg.dirtTiles )
 	{
@@ -67,7 +80,8 @@ void Game::Init()
 	}
 	SoundEngine->setSoundVolume(0.5f);
 	//SoundEngine->play2D("music/everything.mp3", true);
-
+	EngineNoise = SoundEngine->play2D("music/engineSound.wav", true, true);
+	EngineNoise->setVolume(0.1f);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
@@ -92,10 +106,17 @@ void Game::Update(float dt)
 			NPC.IncPos(-((NPC.GetSpeed() * dt * 10) * sinf(NPC.GetRot())), ((NPC.GetSpeed() * dt * 10) * cosf(NPC.GetRot()))); //same as above
 
 		}
+		switch (AICurrentTile().getID())
+		{
+		case 'P':
+		case 'N':
+			CompleteLapNPC();
+			break;
+		}
 		switch (PlayersCurrentTile().getID())
 		{
 		case 'P':
-			CompleteLap();
+			CompleteLapPlayer();
 		case 'S':
 			if (player.GetYPos() > (PlayersCurrentTile().getYPos() * 20) - 25)
 			{
@@ -104,7 +125,7 @@ void Game::Update(float dt)
 			}
 			break;
 		case 'N':
-			CompleteLap();
+			CompleteLapPlayer();
 		case 'W':
 			if (player.GetYPos() < (PlayersCurrentTile().getYPos() * 20) - 35)
 			{
@@ -230,10 +251,43 @@ void Game::Update(float dt)
 			break;
 		}
 		AIMove(dt);
+		if (EngineNoise->getIsPaused() && player.GetSpeed() != 0)
+		{
+			EngineNoise->setIsPaused(false);
+		}
+		else if (!EngineNoise->getIsPaused() && player.GetSpeed() > 0)
+		{
+			EngineNoise->setPlaybackSpeed(1.0f * pow(1 + player.GetSpeed(), 9));
+		}
+		else if (!EngineNoise->getIsPaused() && player.GetSpeed() < 0)
+		{
+			EngineNoise->setPlaybackSpeed(1.0f * pow(1 + -player.GetSpeed(), 9));
+		}
+		else
+		{
+			EngineNoise->setIsPaused(true);
+		}
+	}
+	else 
+	{
+		EngineNoise->setIsPaused(true);
 	}
 }
 
-void Game::CompleteLap()
+void Game::CompleteLapNPC()
+{
+	if (npcCanLap)
+	{
+		npcCanLap = false;
+		npcLaps++;
+		if (npcLaps == 3)
+		{
+			gameOver = true;
+		}
+	}
+}
+
+void Game::CompleteLapPlayer()
 {
 	if (checkpointsCompleted == 62)
 	{
@@ -242,12 +296,12 @@ void Game::CompleteLap()
 			it.second.Reset();
 		}
 		checkpointsCompleted = 0;
-		laps++;
+		playerLaps++;
 
-		if (laps == 3)
+		if (playerLaps == 3)
 		{
-			togglePause();
 			gameOver = true;
+			playerWin = true;
 		}
 	}
 	else
@@ -287,7 +341,7 @@ void Game::AIMove(float dt)
 			}
 			if (NPC.GetSpeed() <= NPC.GetTopSpeed())
 			{
-				NPC.IncSpeed(0.0001f * dt);
+				NPC.IncSpeed(0.00007f * dt);
 			}
 			break;
 		case 'S':
@@ -305,9 +359,11 @@ void Game::AIMove(float dt)
 			}
 			if (NPC.GetSpeed() <= NPC.GetTopSpeed())
 			{
-				NPC.IncSpeed(0.0001f * dt);
+				NPC.IncSpeed(0.00007f * dt);
 			}
 			break;
+		case 'K':
+			npcCanLap = true;
 		case 'E':
 			//rotate until facing 180 whilst moving forward;
 			if (rotInDeg > 90.0f)
@@ -322,7 +378,7 @@ void Game::AIMove(float dt)
 			}
 			if (NPC.GetSpeed() <= NPC.GetTopSpeed())
 			{
-				NPC.IncSpeed(0.0001f * dt);
+				NPC.IncSpeed(0.00007f * dt);
 			}
 			break;
 		case 'W':
@@ -339,13 +395,13 @@ void Game::AIMove(float dt)
 			}
 			if (NPC.GetSpeed() <= NPC.GetTopSpeed())
 			{
-				NPC.IncSpeed(0.0001f * dt);
+				NPC.IncSpeed(0.00007f * dt);
 			}
 			break;
 		case 'F':
 			if (NPC.GetSpeed() <= NPC.GetTopSpeed())
 			{
-				NPC.IncSpeed(0.0001f * dt);
+				NPC.IncSpeed(0.00007f * dt);
 			}
 			//move forward
 			break;
@@ -353,7 +409,7 @@ void Game::AIMove(float dt)
 			//rotate right while moving forward at half speed;
 			if (NPC.GetSpeed() <= NPC.GetTopSpeed() / 1.5)
 			{
-				NPC.IncSpeed(0.0001f * dt);
+				NPC.IncSpeed(0.00007f * dt);
 			}
 			else
 			{
@@ -368,7 +424,7 @@ void Game::AIMove(float dt)
 			//rotate left while moving forward at half speed;
 			if (NPC.GetSpeed() <= NPC.GetTopSpeed() / 1.5)
 			{
-				NPC.IncSpeed(0.0001f * dt);
+				NPC.IncSpeed(0.00007f * dt);
 			}
 			else
 			{
@@ -421,7 +477,7 @@ void Game::ProcessInput(float dt)
 			}
 			if (player.GetSpeed() <= player.GetTopSpeed())
 			{
-				player.IncSpeed(0.0001f * dt);
+				player.IncSpeed(0.00007f * dt);
 			}
 		}
 		if (Down && !Up)
@@ -432,7 +488,7 @@ void Game::ProcessInput(float dt)
 			}
 			if (player.GetSpeed() >= -((player.GetTopSpeed() - (player.GetTopSpeed() / 10))))
 			{
-				player.IncSpeed(-0.0001f * dt);
+				player.IncSpeed(-0.00007f * dt);
 			}
 		}
 		if (!Up && !Down)
@@ -440,11 +496,11 @@ void Game::ProcessInput(float dt)
 
 			if (player.GetSpeed() < 0)
 			{
-				player.IncSpeed(0.0001f * dt);
+				player.IncSpeed(0.00005f * dt);
 			}
 			else if (player.GetSpeed() > 0)
 			{
-				player.IncSpeed(-0.0001 * dt);
+				player.IncSpeed(-0.00005 * dt);
 			}
 			if ((player.GetSpeed() > -0.005 && player.GetSpeed() < 0.0f) || (player.GetSpeed() < 0.005 && player.GetSpeed() > 0.0f))
 			{
@@ -459,54 +515,69 @@ void Game::ProcessInput(float dt)
 
 void Game::Render()
 {
-		//clear the colour and depth buffers
-		glClear(GL_COLOR_BUFFER_BIT);
+	//clear the colour and depth buffers
+	glClear(GL_COLOR_BUFFER_BIT);
 
-		//make work
-		glm::mat4 cameraMatrix = ProjectionMatrix;
-		cameraMatrix = glm::translate(cameraMatrix, glm::vec3(player.GetXPos(), player.GetYPos(), 0.0));
-		ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0));
+	//make work
+	glm::mat4 cameraMatrix = ProjectionMatrix;
+	cameraMatrix = glm::translate(cameraMatrix, glm::vec3(player.GetXPos(), player.GetYPos(), 0.0));
+	ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0));
 
-		glm::mat4 ModelViewMatrix = glm::translate(getViewMatrix(), glm::vec3(player.GetXPos(), player.GetYPos(), 0.0));
-		glm::mat4 TileViewMatrix;
-		ModelViewMatrix = glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0);
-		for (Tile& dirtTile : bg.dirtTiles)
+	glm::mat4 ModelViewMatrix = glm::translate(getViewMatrix(), glm::vec3(player.GetXPos(), player.GetYPos(), 0.0));
+	glm::mat4 TileViewMatrix;
+	ModelViewMatrix = glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0);
+	for (Tile& dirtTile : bg.dirtTiles)
+	{
+		TileViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(dirtTile.getXPos() * dirtTile.GetWidth(), (bg.GetMapHeight() - (dirtTile.getYPos() * dirtTile.GetHeight())), 0.0));
+		dirtTile.Render(shader, TileViewMatrix, cameraMatrix);
+	}
+	glEnable(GL_BLEND);
+
+	for (auto& it : bg.trackTiles)
+	{
+		TileViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(it.second.getXPos() * it.second.GetWidth(), (bg.GetMapHeight() - (it.second.getYPos() * it.second.GetHeight())), 0.0));
+		it.second.Render(shader, TileViewMatrix, cameraMatrix);
+	}
+	for (auto& it : bg.checkpoints)
+	{
+		if (it.second.isActive())
 		{
-			TileViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(dirtTile.getXPos() * dirtTile.GetWidth(), (bg.GetMapHeight() - (dirtTile.getYPos() * dirtTile.GetHeight())), 0.0));
-			dirtTile.Render(shader, TileViewMatrix, cameraMatrix);
+			continue;
 		}
-		glEnable(GL_BLEND);
+		TileViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(it.second.getXPos() * it.second.GetWidth(), (bg.GetMapHeight() - (it.second.getYPos() * it.second.GetHeight())), 0.0));
+		it.second.Render(shader, TileViewMatrix, cameraMatrix);
+	}
 
-		for (auto& it : bg.trackTiles)
-		{
-			TileViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(it.second.getXPos() * it.second.GetWidth(), (bg.GetMapHeight() - (it.second.getYPos() * it.second.GetHeight())), 0.0));
-			it.second.Render(shader, TileViewMatrix, cameraMatrix);
-		}
-		for (auto& it : bg.checkpoints)
-		{
-			if (it.second.isActive())
-			{
-				continue;
-			}
-			TileViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(it.second.getXPos() * it.second.GetWidth(), (bg.GetMapHeight() - (it.second.getYPos() * it.second.GetHeight())), 0.0));
-			it.second.Render(shader, TileViewMatrix, cameraMatrix);
-		}
+	//player rendering code
+	ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0));
+	ModelViewMatrix = glm::translate(ViewMatrix, glm::vec3(-player.GetXPos(), -player.GetYPos(), 0.0));
+	ModelViewMatrix = glm::rotate(ModelViewMatrix, player.GetRot(), glm::vec3(0.0, 0.0, 1.0));
+	player.Render(shader, ModelViewMatrix, cameraMatrix);
 
-		//player rendering code
+	//npc rendering code
+	ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0));
+	ModelViewMatrix = glm::translate(ViewMatrix, glm::vec3(-NPC.GetXPos(), -NPC.GetYPos(), 0.0));
+	ModelViewMatrix = glm::rotate(ModelViewMatrix, NPC.GetRot(), glm::vec3(0.0, 0.0, 1.0));
+	NPC.Render(shader, ModelViewMatrix, cameraMatrix);
 
-		ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0));
-		ModelViewMatrix = glm::translate(ViewMatrix, glm::vec3(-player.GetXPos(), -player.GetYPos(), 0.0));
-		ModelViewMatrix = glm::rotate(ModelViewMatrix, player.GetRot(), glm::vec3(0.0, 0.0, 1.0));
-		player.Render(shader, ModelViewMatrix, cameraMatrix);
+	ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0));
 
-		//npc rendering code
-		ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0));
-		ModelViewMatrix = glm::translate(ViewMatrix, glm::vec3(-NPC.GetXPos(), -NPC.GetYPos(), 0.0));
-		ModelViewMatrix = glm::rotate(ModelViewMatrix, NPC.GetRot(), glm::vec3(0.0, 0.0, 1.0));
-		NPC.Render(shader, ModelViewMatrix, cameraMatrix);
+	if (gamePaused)
+	{
+		pauseScreen.Render(shader, ViewMatrix, ProjectionMatrix);
+	}
 
-		glDisable(GL_BLEND);
-		glutSwapBuffers();
+	if (gameOver && playerWin)
+	{
+		winScreen.Render(shader, ViewMatrix, ProjectionMatrix);
+	}
+	else if (gameOver && !playerWin)
+	{
+		loseScreen.Render(shader, ViewMatrix, ProjectionMatrix);
+	}
+
+	glDisable(GL_BLEND);
+	glutSwapBuffers();
 }
 
 void Game::setLeft(bool left)

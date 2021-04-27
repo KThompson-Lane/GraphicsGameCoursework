@@ -19,12 +19,17 @@ private:
 	bool gameOver = false;
 	bool canMove = true;
 	int checkpointsCompleted;
-	int laps;
+	int playerLaps;
+	int npcLaps;
+	bool npcCanLap = false;
+	bool playerWin = false;
 	Shader shader;
 	Player player;
 	Player NPC;
 	Background bg;
-	Sprite myOtherSquare;
+	Sprite winScreen;
+	Sprite loseScreen;
+	Sprite pauseScreen;
 	glm::mat4 ProjectionMatrix;
 	glm::mat4 ViewMatrix;  // matrix for the modelling and viewing
 public: 
@@ -35,7 +40,8 @@ public:
 	void Init();
 	void ProcessInput(float dt);
 	void Update(float dt);
-	void CompleteLap();
+	void CompleteLapNPC();
+	void CompleteLapPlayer();
 	Tile& AICurrentTile();
 	Tile& PlayersCurrentTile();
 	void AIMove(float dt);
