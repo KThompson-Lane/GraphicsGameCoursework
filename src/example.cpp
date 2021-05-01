@@ -25,7 +25,7 @@ int screenWidth = 2560, screenHeight = 1440;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
-
+float zoom = 40.0f;
 GLint tempX = 0;
 GLint tempY = 0;
 Shader shader;
@@ -45,14 +45,22 @@ void reshape(int width, int height)		// Resize the OpenGL window
 
 	glViewport(0,0, width, height);						// set Viewport dimensions
 
-	racingGame.setProjMatrix((glm::ortho(width / -40.0, width / 40.0, height / -40.0, height / 40.0))); //reset to 40
+	racingGame.setProjMatrix((glm::ortho(width / -zoom, width / zoom, height / -zoom, height / zoom))); //reset to 40
 
 }
 
 
 void display()									
 {
-	racingGame.Render();
+	if (racingGame.inMenu)
+	{
+		racingGame.RenderMenu();
+	}
+	else
+	{
+		racingGame.Render();
+	}
+
 }
 void keyboard(unsigned char key, int x, int y)
 {
@@ -60,60 +68,129 @@ void keyboard(unsigned char key, int x, int y)
 }
 void keyboardUp(unsigned char key, int x, int y)
 {
-	switch (key)
+	if (racingGame.inMenu)
 	{
+		switch (key)
+		{
+		case 13:
+			racingGame.Init();
+			racingGame.inMenu = false;
+			break;
+		}
+	}
+	else if (racingGame.gameOver)
+	{
+		switch (key)
+		{
+		case 32:
+			//restart game
+			racingGame.restartGame();
+			break;
+		case 27:
+			//quit game
+			//quit();
+
+			//MAKE WORK OR RESET FUNCTION
+			racingGame.~Game();
+			new(&racingGame) Game(screenWidth, screenHeight);
+			reshape(screenWidth, screenHeight);
+			racingGame.InitMenu();
+			
+		}
+
+	}
+	else
+	{
+		switch (key)
+		{
 		case ' ':
 			racingGame.togglePause();
 			break;
+		}
 	}
+
 }
 
 void special(int key, int x, int y)
 {
-	switch (key)
+	if (!racingGame.inMenu)
 	{
-	case GLUT_KEY_LEFT:
-		racingGame.setLeft(true);
-		break;
-	case GLUT_KEY_RIGHT:
-		racingGame.setRight(true);
-		break;
-	case GLUT_KEY_UP:
-		racingGame.setUp(true);
-		break;
-	case GLUT_KEY_DOWN:
-		racingGame.setDown(true);
-		break;
+		switch (key)
+		{
+		case GLUT_KEY_LEFT:
+			racingGame.setLeft(true);
+			break;
+		case GLUT_KEY_RIGHT:
+			racingGame.setRight(true);
+			break;
+		case GLUT_KEY_UP:
+			racingGame.setUp(true);
+			break;
+		case GLUT_KEY_DOWN:
+			racingGame.setDown(true);
+			break;
+		}
 	}
+
 }
 
 void specialUp(int key, int x, int y)
 {
-	switch (key)
+	if (racingGame.inMenu)
 	{
-	case GLUT_KEY_LEFT:
-		racingGame.setLeft(false);
-		break;
-	case GLUT_KEY_RIGHT:
-		racingGame.setRight(false);
-		break;
-	case GLUT_KEY_UP:
-		racingGame.setUp(false);
-		break;
-	case GLUT_KEY_DOWN:
-		racingGame.setDown(false);
-		break;
+		switch (key)
+		{
+		case GLUT_KEY_LEFT:
+			if (racingGame.getSelection() - 1 < 0)
+			{
+				racingGame.setSelection(2);
+			}
+			else
+			{
+				racingGame.setSelection((racingGame.getSelection() - 1));
+
+			}
+			break;
+		case GLUT_KEY_RIGHT:
+			racingGame.setSelection((racingGame.getSelection() + 1) % 3);
+			break;
+		}
+		std::cout << racingGame.getSelection();
+		racingGame.MainMenu();
 	}
+	else
+	{
+		switch (key)
+		{
+		case GLUT_KEY_LEFT:
+			racingGame.setLeft(false);
+			break;
+		case GLUT_KEY_RIGHT:
+			racingGame.setRight(false);
+			break;
+		case GLUT_KEY_UP:
+			racingGame.setUp(false);
+			break;
+		case GLUT_KEY_DOWN:
+			racingGame.setDown(false);
+			break;
+		}
+	}
+	
 }
 
 void idle()
 {
-	float currentFrame = glutGet(GLUT_ELAPSED_TIME);
-	deltaTime = (currentFrame - lastFrame);
-	lastFrame = currentFrame;
-	racingGame.ProcessInput(deltaTime);
-	racingGame.Update(deltaTime);
+	if (!racingGame.inMenu)
+	{
+		float currentFrame = glutGet(GLUT_ELAPSED_TIME);
+		deltaTime = (currentFrame - lastFrame);
+		lastFrame = currentFrame;
+		racingGame.ProcessInput(deltaTime);
+		racingGame.Update(deltaTime);
+	}
 	glutPostRedisplay();
+
 }
 /**************** END OPENGL FUNCTIONS *************************/
 
@@ -143,9 +220,8 @@ int main(int argc, char **argv)
 	cout << OpenGLVersion[0] << " " << OpenGLVersion[1] << endl;
 
 	//initialise the objects for rendering
-	racingGame.Init();
+	racingGame.InitMenu();
 
-	//init();
 
 	//specify which function will be called to refresh the screen.
 	glutDisplayFunc(display);

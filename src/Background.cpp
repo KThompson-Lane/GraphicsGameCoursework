@@ -15,7 +15,7 @@ Background::Background()
 	m_MapHeight = 0;
 }
 
-void Background::loadBackground()
+void Background::loadBackground(int levelNumber)
 {
 	
 	//load png image
@@ -65,7 +65,10 @@ void Background::loadBackground()
 	static std::string s_npcInstructions;
 	nlohmann::json level;
 	std::ifstream myReadFile;
-	myReadFile.open("src/level.json");
+	std::string levelToOpen = "src/level_";
+	levelToOpen = levelToOpen + std::to_string(levelNumber);
+	levelToOpen = levelToOpen + ".json";
+	myReadFile.open(levelToOpen);
 	myReadFile >> level;
 	for each (std::string line in level["track"])
 	{
@@ -190,6 +193,7 @@ void Background::loadBackground()
 					check.setYPos(y);
 					glm::vec2 coords = { x,y };
 					checkpoints.emplace(coords, check);
+					m_checkpoints++;
 				}
 			}
 			if (m_TileLookup.find(tileType) != m_TileLookup.end())
@@ -224,4 +228,9 @@ unsigned int Background::GetMapWidth()
 unsigned int Background::GetMapHeight()
 {
 	return m_MapHeight;
+}
+
+unsigned int Background::GetCheckpoints()
+{
+	return m_checkpoints;
 }

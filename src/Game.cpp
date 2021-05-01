@@ -16,25 +16,17 @@ Game::Game(unsigned int width, unsigned int height)
 
 Game::~Game()
 {
-
+	
 }
 
 void Game::Init()
 {
-	FreeImage_Initialise();
 	
 	glClearColor((39.0f/255.0f),(174.0f/255.0f), (96.0f/255.0f), 0.0);						//sets the clear colour to whatever RGB values passed in, normalized between 0 and 1 
-
-	//Load the GLSL program 
-	if (!shader.load("Basic", "./glslfiles/basicTexture.vert", "./glslfiles/basicTexture.frag"))
-	{
-		std::cout << "failed to load shader" << std::endl;
-	}
 
 	///This part commented is to scale the width of the sprite to match the dimensions of the car.png image.
 	player.SetWidth(10.0f * (264.0f / 500.0f));
 	player.SetHeight(10.0f);
-	float red[3] = { 1,0,0 };
 	player.Init(shader, red, "textures/car.png");
 
 	NPC.SetWidth(10.0f * (264.0f / 500.0f));
@@ -45,8 +37,7 @@ void Game::Init()
 	NPC.IncPos(0, -30);
 	NPC.IncPos(0, 20 * 2);
 	NPC.SetRot(1.5708f);
-	//player.SetXpos(-530.0f);
-	//player.SetYpos(20.0f);
+
 	player.SetXpos(-20 * 4);
 	player.IncPos(0,-30);
 	player.IncPos(0,20 * 3);
@@ -64,7 +55,21 @@ void Game::Init()
 	loseScreen.SetHeight(50.0f);
 	loseScreen.Init(shader, red, "textures/LoseScreen.png");
 
-	bg.loadBackground();
+
+	//laps images 
+	lap1.SetWidth(10.0f * (128.0f/ 64.0f));
+	lap1.SetHeight(10.0f);
+	lap1.Init(shader, red, "textures/lap1.png");
+
+	lap2.SetWidth(10.0f * (128.0f / 64.0f));
+	lap2.SetHeight(10.0f);
+	lap2.Init(shader, red, "textures/lap2.png");
+
+	lap3.SetWidth(10.0f * (128.0f / 64.0f));
+	lap3.SetHeight(10.0f);
+	lap3.Init(shader, red, "textures/lap3.png");
+
+	bg.loadBackground(selection + 1);
 	for (Tile& dirtTile : bg.dirtTiles )
 	{
 		dirtTile.Init(shader, red);
@@ -288,7 +293,7 @@ void Game::CompleteLapNPC()
 
 void Game::CompleteLapPlayer()
 {
-	if (checkpointsCompleted == 62)
+	if (checkpointsCompleted == bg.GetCheckpoints())
 	{
 		for (auto& it : bg.checkpoints)
 		{
@@ -305,7 +310,7 @@ void Game::CompleteLapPlayer()
 	}
 	else
 	{
-		std::cout << checkpointsCompleted;
+		std::cout << checkpointsCompleted << '/' << bg.GetCheckpoints() << std::endl;
 	}
 }
 
@@ -454,7 +459,7 @@ void Game::ProcessInput(float dt)
 			}
 			else
 			{
-				player.IncRot(0.05f * dt * player.GetSpeed());
+				player.IncRot(-(0.05f * dt * player.GetSpeed()));
 			}
 		}
 		if (Right && (player.GetSpeed() != 0.0f))
@@ -465,7 +470,7 @@ void Game::ProcessInput(float dt)
 			}
 			else
 			{
-				player.IncRot(-(0.05f * dt * player.GetSpeed()));
+				player.IncRot(0.05f * dt * player.GetSpeed());
 			}
 		}
 		if (Up && !Down)
@@ -516,7 +521,7 @@ void Game::Render()
 {
 	//clear the colour and depth buffers
 	glClear(GL_COLOR_BUFFER_BIT);
-
+	
 	//make work
 	glm::mat4 cameraMatrix = ProjectionMatrix;
 	cameraMatrix = glm::translate(cameraMatrix, glm::vec3(player.GetXPos(), player.GetYPos(), 0.0));
@@ -561,6 +566,7 @@ void Game::Render()
 
 	ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0));
 
+
 	if (gamePaused)
 	{
 		pauseScreen.Render(shader, ViewMatrix, ProjectionMatrix);
@@ -574,6 +580,26 @@ void Game::Render()
 	{
 		loseScreen.Render(shader, ViewMatrix, ProjectionMatrix);
 	}
+	//lap rendering
+	ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0, 30.0, 0.0));
+	switch (playerLaps)
+	{
+	case 0:
+		lap1.Render(shader, ViewMatrix, ProjectionMatrix);
+		break;
+	case 1:
+		lap2.Render(shader, ViewMatrix, ProjectionMatrix);
+		break;
+	case 2:
+		lap3.Render(shader, ViewMatrix, ProjectionMatrix);
+		break;
+
+	default:
+		lap3.Render(shader, ViewMatrix, ProjectionMatrix);
+		break;
+
+	}
+
 
 	glDisable(GL_BLEND);
 	glutSwapBuffers();
@@ -607,6 +633,146 @@ void Game::setProjMatrix(glm::mat4 projMatrix)
 glm::mat4 Game::getViewMatrix()
 {
 	return ViewMatrix;
+}
+
+void Game::RenderMenu()
+{
+	//clear the colour and depth buffers
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0, 20.0, 0.0));
+	glEnable(GL_BLEND);
+	titleScreen.Render(shader, ViewMatrix, ProjectionMatrix);
+
+	ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(-30.0, -5.0, 0.0));
+	level1Label.Render(shader, ViewMatrix, ProjectionMatrix);
+
+	ViewMatrix = glm::translate(ViewMatrix, glm::vec3(30.0, 0.0, 0.0));
+	level2Label.Render(shader, ViewMatrix, ProjectionMatrix);
+
+	ViewMatrix = glm::translate(ViewMatrix, glm::vec3(30.0, 0.0, 0.0));
+	level3Label.Render(shader, ViewMatrix, ProjectionMatrix);
+
+	glDisable(GL_BLEND);
+
+	ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(-30.0, -20.0, 0.0));
+
+	level1.Render(shader, ViewMatrix, ProjectionMatrix);
+
+	ViewMatrix = glm::translate(ViewMatrix, glm::vec3(30.0, 0.0, 0.0));
+
+	level2.Render(shader, ViewMatrix, ProjectionMatrix);
+
+	ViewMatrix = glm::translate(ViewMatrix, glm::vec3(30.0, 0.0, 0.0));
+
+	level3.Render(shader, ViewMatrix, ProjectionMatrix);
+
+	glutSwapBuffers();
+}
+
+void Game::InitMenu()
+{
+	FreeImage_Initialise();
+
+	//Load the GLSL program 
+	if (!shader.load("Basic", "./glslfiles/basicTexture.vert", "./glslfiles/basicTexture.frag"))
+	{
+		std::cout << "failed to load shader" << std::endl;
+	}
+	glClearColor((0.0f / 255.0f), (0.0f / 255.0f), (0.0f / 255.0f), 0.0);				//sets the clear colour to whatever RGB values passed in, normalized between 0 and 1 
+	
+	
+	titleScreen.SetWidth(30.0f * (1024 / 512));
+	titleScreen.SetHeight(30.0f);
+
+	level1Label.SetWidth(5.0f * (320 / 64));
+	level1Label.SetHeight(5.0f);
+
+	level2Label.SetWidth(5.0f * (320 / 64));
+	level2Label.SetHeight(5.0f);
+
+	level3Label.SetWidth(5.0f * (320 / 64));
+	level3Label.SetHeight(5.0f);
+
+	level1.SetWidth(25.0f);
+	level1.SetHeight(25.0f);
+	std::cout << "init";
+	level2.SetWidth(25.0f);
+	level2.SetHeight(25.0f);
+	level3.SetWidth(25.0f);
+	level3.SetHeight(25.0f);
+
+	titleScreen.Init(shader, red, "textures/TitleScreen.png");
+	level1Label.Init(shader, red, "textures/level_1_label.png");
+	level2Label.Init(shader, red, "textures/level_2_label.png");
+	level3Label.Init(shader, red, "textures/level_3_label.png");
+
+	level1.Init(shader, red, "textures/level_1.png");
+	level2.Init(shader, red, "textures/level_2_deselected.png");
+	level3.Init(shader, red, "textures/level_3_deselected.png");
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+}
+
+void Game::MainMenu()
+{
+	switch (selection)
+	{
+	case 0:
+		level1.Init(shader, red, "textures/level_1.png");
+		level2.Init(shader, red, "textures/level_2_deselected.png");
+		level3.Init(shader, red, "textures/level_3_deselected.png");
+		break;
+	case 1:
+		level1.Init(shader, red, "textures/level_1_deselected.png");
+		level2.Init(shader, red, "textures/level_2.png");
+		level3.Init(shader, red, "textures/level_3_deselected.png");
+		break;
+	case 2:
+		level1.Init(shader, red, "textures/level_1_deselected.png");
+		level2.Init(shader, red, "textures/level_2_deselected.png");
+		level3.Init(shader, red, "textures/level_3.png");
+		break;
+	default:
+		level1.Init(shader, red, "textures/level_1.png");
+		level2.Init(shader, red, "textures/level_2_deselected.png");
+		level3.Init(shader, red, "textures/level_3_deselected.png");
+		break;
+	}
+}
+
+void Game::setSelection(int selection)
+{
+	this->selection = selection;
+}
+
+int Game::getSelection()
+{
+	return this->selection;
+}
+
+void Game::restartGame()
+{
+	NPC.SetYpos(0.0f);
+	NPC.SetXpos(-20 * 4);
+	NPC.IncPos(0, -30);
+	NPC.IncPos(0, 20 * 2);
+	NPC.SetRot(1.5708f);
+
+	player.SetYpos(0.0f);
+	player.SetXpos(-20 * 4);
+	player.IncPos(0, -30);
+	player.IncPos(0, 20 * 3);
+	player.SetRot(1.5708f);
+
+	playerLaps = 0;
+	npcLaps = 0;
+	npcCanLap = false;
+	playerWin = false;
+	player.SetSpeed(0.0f);
+	NPC.SetSpeed(0.0f);
+	togglePause();
+	gameOver = false;
 }
 
 
