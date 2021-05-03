@@ -3,13 +3,14 @@
 
 
 
+
 irrklang::ISoundEngine* SoundEngine = irrklang::createIrrKlangDevice();
 irrklang::ISound* EngineNoise;
 
 Game::Game(unsigned int width, unsigned int height)
 {
-	NPC.SetTopSpeed(0.08f);
-	player.SetTopSpeed(0.08f);
+	NPC.SetTopSpeed(0.8f);
+	player.SetTopSpeed(0.8f);
 	Width = width;
 	Height = height;
 }
@@ -24,61 +25,51 @@ void Game::Init()
 	glClearColor((39.0f/255.0f),(174.0f/255.0f), (96.0f/255.0f), 0.0);						//sets the clear colour to whatever RGB values passed in, normalized between 0 and 1 
 
 	///This part commented is to scale the width of the sprite to match the dimensions of the car.png image.
-	player.SetWidth(10.0f * (264.0f / 500.0f));
-	player.SetHeight(10.0f);
-	player.Init(shader, red, "textures/car.png");
+	player.SetWidth(100.0f * (264.0f / 500.0f));
+	player.SetHeight(100.0f);
+	player.Init(shader, white, "textures/car.png");
 
-	NPC.SetWidth(10.0f * (264.0f / 500.0f));
-	NPC.SetHeight(10.0f);
-	NPC.Init(shader, red, "textures/blueCar.png");
+	NPC.SetWidth(100.0f * (264.0f / 500.0f));
+	NPC.SetHeight(100.0f);
+	NPC.Init(shader, white, "textures/blueCar.png");
 
-	NPC.SetXpos(20 * 4);
-	NPC.IncPos(0, 20 * 2);
+	NPC.SetXpos(200 * 4);
+	NPC.IncPos(0, 200 * 2);
 	NPC.SetRot(1.5708f);
 
-	player.SetXpos(20 * 4);
-	player.IncPos(0,20 * 3);
+	player.SetXpos(200 * 4);
+	player.IncPos(0,200 * 3);
 	player.SetRot(1.5708f);
 
-	pauseScreen.SetWidth(50.0f * (768.0f / 512.0f));
-	pauseScreen.SetHeight(50.0f);
-	pauseScreen.Init(shader, red, "textures/PauseScreen.png");
+	pauseScreen.SetWidth(500.0f * (768.0f / 512.0f));
+	pauseScreen.SetHeight(500.0f);
+	pauseScreen.Init(shader, white, "textures/PauseScreen.png");
 
-	winScreen.SetWidth(50.0f * (768.0f / 512.0f));
-	winScreen.SetHeight(50.0f);
-	winScreen.Init(shader, red, "textures/WinScreen.png");
+	winScreen.SetWidth(500.0f * (768.0f / 512.0f));
+	winScreen.SetHeight(500.0f);
+	winScreen.Init(shader, white, "textures/WinScreen.png");
 
-	loseScreen.SetWidth(50.0f * (768.0f / 512.0f));
-	loseScreen.SetHeight(50.0f);
-	loseScreen.Init(shader, red, "textures/LoseScreen.png");
-
-
-	//laps images 
-	lap1.SetWidth(10.0f * (128.0f/ 64.0f));
-	lap1.SetHeight(10.0f);
-	lap1.Init(shader, red, "textures/lap1.png");
-
-	lap2.SetWidth(10.0f * (128.0f / 64.0f));
-	lap2.SetHeight(10.0f);
-	lap2.Init(shader, red, "textures/lap2.png");
-
-	lap3.SetWidth(10.0f * (128.0f / 64.0f));
-	lap3.SetHeight(10.0f);
-	lap3.Init(shader, red, "textures/lap3.png");
+	loseScreen.SetWidth(500.0f * (768.0f / 512.0f));
+	loseScreen.SetHeight(500.0f);
+	loseScreen.Init(shader, white, "textures/LoseScreen.png");
 
 	bg.loadBackground(selection + 1);
 	for (Tile& dirtTile : bg.dirtTiles )
 	{
-		dirtTile.Init(shader, red);
+		dirtTile.Init(shader, white);
 	}
 	for (auto& it : bg.trackTiles)
 	{
-		it.second.Init(shader, red);
+		it.second.Init(shader, white);
 	}
 	for (auto& it : bg.checkpoints)
 	{
-		it.second.Init(shader, red);
+		it.second.Init(shader, white);
 	}
+
+	float black[3] = { 0,0,0 };
+	lapFont.init("fonts/BAUHS93.TTF", 75, black);
+	timerFont.init("fonts/BAUHS93.TTF", 40, black);
 	SoundEngine->setSoundVolume(0.5f);
 	//SoundEngine->play2D("music/everything.mp3", true);
 	EngineNoise = SoundEngine->play2D("music/engineSound.wav", true, true);
@@ -138,10 +129,10 @@ void Game::Update(float dt)
 			break;
 		case 'R':
 			//check collision
-			xDist = (((PlayersCurrentTile().getXPos()) - 10) - (player.GetXPos()));
-			yDist = ((player.GetYPos()) - ((PlayersCurrentTile().getYPos()) + 10));
+			xDist = (((PlayersCurrentTile().getXPos()) - 100) - (player.GetXPos()));
+			yDist = ((player.GetYPos()) - ((PlayersCurrentTile().getYPos()) + 100));
 			temp = sqrt((xDist * xDist) + (yDist * yDist));
-			if (temp > 15.0f)
+			if (temp > 150.0f)
 			{
 				player.SetSpeed(-player.GetSpeed());
 				player.IncPos((((player.GetSpeed()) * dt) * sinf(player.GetRot())), (((player.GetSpeed()) * dt) * cosf(player.GetRot())));
@@ -149,10 +140,10 @@ void Game::Update(float dt)
 			break;
 		case 'V':
 			//check collision
-			xDist = (((PlayersCurrentTile().getXPos()) - 10) - (player.GetXPos()));
-			yDist = ((player.GetYPos()) - ((PlayersCurrentTile().getYPos()) - 10));
+			xDist = (((PlayersCurrentTile().getXPos()) - 100) - (player.GetXPos()));
+			yDist = ((player.GetYPos()) - ((PlayersCurrentTile().getYPos()) - 100));
 			temp = sqrt((xDist * xDist) + (yDist * yDist));
-			if (temp > 15.0f)
+			if (temp > 150.0f)
 			{
 				player.SetSpeed(-player.GetSpeed());
 				player.IncPos((((player.GetSpeed()) * dt) * sinf(player.GetRot())), (((player.GetSpeed()) * dt) * cosf(player.GetRot())));
@@ -161,10 +152,10 @@ void Game::Update(float dt)
 
 		case 'Z':
 			//check collision
-			xDist = (((PlayersCurrentTile().getXPos()) + 10) - (player.GetXPos()));
-			yDist = ((player.GetYPos()) - ((PlayersCurrentTile().getYPos()) - 10));
+			xDist = (((PlayersCurrentTile().getXPos()) + 100) - (player.GetXPos()));
+			yDist = ((player.GetYPos()) - ((PlayersCurrentTile().getYPos()) - 100));
 			temp = sqrt((xDist * xDist) + (yDist * yDist));
-			if (temp > 15.0f)
+			if (temp > 150.0f)
 			{
 				player.SetSpeed(-player.GetSpeed());
 				player.IncPos((((player.GetSpeed()) * dt) * sinf(player.GetRot())), (((player.GetSpeed()) * dt) * cosf(player.GetRot())));
@@ -173,17 +164,17 @@ void Game::Update(float dt)
 
 		case 'Q':
 			//check collision
-			xDist = (((PlayersCurrentTile().getXPos()) + 10) - (player.GetXPos()));
-			yDist = ((player.GetYPos()) - ((PlayersCurrentTile().getYPos()) + 10));
+			xDist = (((PlayersCurrentTile().getXPos()) + 100) - (player.GetXPos()));
+			yDist = ((player.GetYPos()) - ((PlayersCurrentTile().getYPos()) + 100));
 			temp = sqrt((xDist * xDist) + (yDist * yDist));
-			if (temp > 15.0f)
+			if (temp > 150.0f)
 			{
 				player.SetSpeed(-player.GetSpeed());
 				player.IncPos((((player.GetSpeed()) * dt) * sinf(player.GetRot())), (((player.GetSpeed()) * dt) * cosf(player.GetRot())));
 			}
 			break;
 		}
-		glm::vec2 tilePos = { std::round(player.GetXPos() / 20), std::round((player.GetYPos()) / 20) };
+		glm::vec2 tilePos = { std::round(player.GetXPos() / 200), std::round((player.GetYPos()) / 200) };
 		switch (bg.checkpoints[tilePos].getType())
 		{
 		case 'e':
@@ -246,16 +237,18 @@ void Game::Update(float dt)
 		}
 		else if (!EngineNoise->getIsPaused() && player.GetSpeed() > 0)
 		{
-			EngineNoise->setPlaybackSpeed(1.0f * pow(1 + player.GetSpeed(), 9));
+			EngineNoise->setPlaybackSpeed(1.0f * pow(1 + player.GetSpeed()/2, 2));
 		}
 		else if (!EngineNoise->getIsPaused() && player.GetSpeed() < 0)
 		{
-			EngineNoise->setPlaybackSpeed(1.0f * pow(1 + -player.GetSpeed(), 9));
+			EngineNoise->setPlaybackSpeed(1.0f * pow(1 + -player.GetSpeed()/2, 2));
 		}
 		else
 		{
 			EngineNoise->setIsPaused(true);
 		}
+		//dt is time in miliseconds
+		lapTime += dt/1000;
 	}
 	else 
 	{
@@ -285,29 +278,33 @@ void Game::CompleteLapPlayer()
 			it.second.Reset();
 		}
 		checkpointsCompleted = 0;
-		playerLaps++;
 
-		if (playerLaps == 3)
+		if (playerLaps+1 == 3)
 		{
 			gameOver = true;
 			playerWin = true;
 		}
-	}
-	else
-	{
-		std::cout << checkpointsCompleted << '/' << bg.GetCheckpoints() << std::endl;
+		else
+		{
+			playerLaps++;
+		}
+		if (bestTime > lapTime || bestTime == 0.0f)
+		{
+			bestTime = lapTime;
+		}
+		lapTime = 0.0f;
 	}
 }
 
 Tile& Game::AICurrentTile()
 {
-	glm::vec2 tilePos = { std::round(NPC.GetXPos() / 20), std::round((NPC.GetYPos()) / 20) };
+	glm::vec2 tilePos = { std::round(NPC.GetXPos() / 200), std::round((NPC.GetYPos()) / 200) };
 	return bg.trackTiles[tilePos];
 }
 
 Tile& Game::PlayersCurrentTile()
 {
-	glm::vec2 tilePos = { std::round(player.GetXPos() / 20), std::round((player.GetYPos()) / 20) };
+	glm::vec2 tilePos = { std::round(player.GetXPos() / 200), std::round((player.GetYPos()) / 200) };
 	return bg.trackTiles[tilePos];
 }
 
@@ -321,16 +318,16 @@ void Game::AIMove(float dt)
 			if (rotInDeg > 180.0f)
 			{
 				//turn right
-				NPC.IncRot(-0.05f * dt * NPC.GetSpeed());
+				NPC.IncRot(-0.005f * dt * NPC.GetSpeed());
 			}
 			else if (rotInDeg < 180.0f)
 			{
 				//turn left
-				NPC.IncRot(0.05f * dt * NPC.GetSpeed());
+				NPC.IncRot(0.005f * dt * NPC.GetSpeed());
 			}
 			if (NPC.GetSpeed() <= NPC.GetTopSpeed())
 			{
-				NPC.IncSpeed(0.00007f * dt);
+				NPC.IncSpeed(0.0007f * dt);
 			}
 			break;
 		case 'S':
@@ -338,17 +335,17 @@ void Game::AIMove(float dt)
 			if (rotInDeg > 180.0f && rotInDeg < 360.0f)
 			{
 				//turn left
-				NPC.IncRot(0.05f * dt * NPC.GetSpeed());
+				NPC.IncRot(0.005f * dt * NPC.GetSpeed());
 			}
 			if (rotInDeg > 0.0f && rotInDeg <= 180.0f)
 			{
 				//turn right
-				NPC.IncRot(-0.05f * dt * NPC.GetSpeed());
+				NPC.IncRot(-0.005f * dt * NPC.GetSpeed());
 
 			}
 			if (NPC.GetSpeed() <= NPC.GetTopSpeed())
 			{
-				NPC.IncSpeed(0.00007f * dt);
+				NPC.IncSpeed(0.0007f * dt);
 			}
 			break;
 		case 'K':
@@ -358,16 +355,16 @@ void Game::AIMove(float dt)
 			if (rotInDeg > 90.0f)
 			{
 				//turn right
-				NPC.IncRot(-0.05f * dt * NPC.GetSpeed());
+				NPC.IncRot(-0.005f * dt * NPC.GetSpeed());
 			}
 			else if (rotInDeg < 90.0f)
 			{
 				//turn left
-				NPC.IncRot(0.05f * dt * NPC.GetSpeed());
+				NPC.IncRot(0.005f * dt * NPC.GetSpeed());
 			}
 			if (NPC.GetSpeed() <= NPC.GetTopSpeed())
 			{
-				NPC.IncSpeed(0.00007f * dt);
+				NPC.IncSpeed(0.0007f * dt);
 			}
 			break;
 		case 'W':
@@ -375,22 +372,22 @@ void Game::AIMove(float dt)
 			if (rotInDeg > 270.0f)
 			{
 				//turn right
-				NPC.IncRot(-0.05f * dt * NPC.GetSpeed());
+				NPC.IncRot(-0.005f * dt * NPC.GetSpeed());
 			}
 			else if (rotInDeg < 270.0f)
 			{
 				//turn left
-				NPC.IncRot(0.05f * dt * NPC.GetSpeed());
+				NPC.IncRot(0.005f * dt * NPC.GetSpeed());
 			}
 			if (NPC.GetSpeed() <= NPC.GetTopSpeed())
 			{
-				NPC.IncSpeed(0.00007f * dt);
+				NPC.IncSpeed(0.0007f * dt);
 			}
 			break;
 		case 'F':
 			if (NPC.GetSpeed() <= NPC.GetTopSpeed())
 			{
-				NPC.IncSpeed(0.00007f * dt);
+				NPC.IncSpeed(0.0007f * dt);
 			}
 			//move forward
 			break;
@@ -398,30 +395,30 @@ void Game::AIMove(float dt)
 			//rotate right while moving forward at half speed;
 			if (NPC.GetSpeed() <= NPC.GetTopSpeed() / 1.5)
 			{
-				NPC.IncSpeed(0.00007f * dt);
+				NPC.IncSpeed(0.0007f * dt);
 			}
 			else
 			{
-				NPC.IncSpeed(-0.0001f * dt);
+				NPC.IncSpeed(-0.001f * dt);
 			}
 			if (NPC.GetSpeed() > 0.0f)
 			{
-				NPC.IncRot(-0.05f * dt * NPC.GetSpeed());
+				NPC.IncRot(-0.005f * dt * NPC.GetSpeed());
 			}
 			break;
 		case'L':
 			//rotate left while moving forward at half speed;
 			if (NPC.GetSpeed() <= NPC.GetTopSpeed() / 1.5)
 			{
-				NPC.IncSpeed(0.00007f * dt);
+				NPC.IncSpeed(0.0007f * dt);
 			}
 			else
 			{
-				NPC.IncSpeed(-0.0001f * dt);
+				NPC.IncSpeed(-0.001f * dt);
 			}
 			if (NPC.GetSpeed() > 0.0f)
 			{
-				NPC.IncRot(0.05f * dt * NPC.GetSpeed());
+				NPC.IncRot(0.005f * dt * NPC.GetSpeed());
 			}
 			break;
 
@@ -440,44 +437,44 @@ void Game::ProcessInput(float dt)
 		{
 			if (player.GetSpeed() > 0)
 			{
-				player.IncRot(0.05f * dt * player.GetSpeed());
+				player.IncRot(0.005f * dt * player.GetSpeed());
 			}
 			else
 			{
-				player.IncRot(-(0.05f * dt * player.GetSpeed()));
+				player.IncRot(-(0.005f * dt * player.GetSpeed()));
 			}
 		}
 		if (Right && (player.GetSpeed() != 0.0f))
 		{
 			if (player.GetSpeed() > 0)
 			{
-				player.IncRot(-0.05f * dt * player.GetSpeed());
+				player.IncRot(-0.005f * dt * player.GetSpeed());
 			}
 			else
 			{
-				player.IncRot(0.05f * dt * player.GetSpeed());
+				player.IncRot(0.005f * dt * player.GetSpeed());
 			}
 		}
 		if (Up && !Down)
 		{
 			if (player.GetSpeed() < 0)
 			{
-				player.IncSpeed(0.0005f * dt);
+				player.IncSpeed(0.005f * dt);
 			}
 			if (player.GetSpeed() <= player.GetTopSpeed())
 			{
-				player.IncSpeed(0.00007f * dt);
+				player.IncSpeed(0.0007f * dt);
 			}
 		}
 		if (Down && !Up)
 		{
 			if (player.GetSpeed() > 0)
 			{
-				player.IncSpeed(-0.0005f * dt);
+				player.IncSpeed(-0.005f * dt);
 			}
 			if (player.GetSpeed() >= -((player.GetTopSpeed() - (player.GetTopSpeed() / 10))))
 			{
-				player.IncSpeed(-0.00007f * dt);
+				player.IncSpeed(-0.0007f * dt);
 			}
 		}
 		if (!Up && !Down)
@@ -485,11 +482,11 @@ void Game::ProcessInput(float dt)
 
 			if (player.GetSpeed() < 0)
 			{
-				player.IncSpeed(0.00005f * dt);
+				player.IncSpeed(0.0005f * dt);
 			}
 			else if (player.GetSpeed() > 0)
 			{
-				player.IncSpeed(-0.00005 * dt);
+				player.IncSpeed(-0.0005 * dt);
 			}
 			if ((player.GetSpeed() > -0.005 && player.GetSpeed() < 0.0f) || (player.GetSpeed() < 0.005 && player.GetSpeed() > 0.0f))
 			{
@@ -521,7 +518,6 @@ void Game::Render()
 		dirtTile.Render(shader, TileViewMatrix, cameraMatrix);
 	}
 	glEnable(GL_BLEND);
-
 	for (auto& it : bg.trackTiles)
 	{
 		TileViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(it.second.getXPos(), (bg.GetMapHeight() - (it.second.getYPos())), 0.0));
@@ -566,26 +562,12 @@ void Game::Render()
 		loseScreen.Render(shader, ViewMatrix, ProjectionMatrix);
 	}
 	//lap rendering
-	ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0, 30.0, 0.0));
-	switch (playerLaps)
-	{
-	case 0:
-		lap1.Render(shader, ViewMatrix, ProjectionMatrix);
-		break;
-	case 1:
-		lap2.Render(shader, ViewMatrix, ProjectionMatrix);
-		break;
-	case 2:
-		lap3.Render(shader, ViewMatrix, ProjectionMatrix);
-		break;
+	ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0, 300.0, 0.0));
+	print(ProjectionMatrix, lapFont, -170, 280, "Lap :%d/%d", playerLaps + 1, 3);
 
-	default:
-		lap3.Render(shader, ViewMatrix, ProjectionMatrix);
-		break;
-
-	}
-
-
+	print(ProjectionMatrix, timerFont, +220, 300, "Best Time : %4.2f", bestTime);
+	print(ProjectionMatrix, timerFont, +220, 250, "Time : %4.2f", lapTime);
+	print(ProjectionMatrix, timerFont, -640, 300, "Checkpoints: %d/%d", checkpointsCompleted / 2, (bg.GetCheckpoints() / 2));
 	glDisable(GL_BLEND);
 	glutSwapBuffers();
 }
@@ -625,30 +607,30 @@ void Game::RenderMenu()
 	//clear the colour and depth buffers
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0, 20.0, 0.0));
+	ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0, 200.0, 0.0));
 	glEnable(GL_BLEND);
 	titleScreen.Render(shader, ViewMatrix, ProjectionMatrix);
 
-	ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(-30.0, -5.0, 0.0));
+	ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(-300.0, -50.0, 0.0));
 	level1Label.Render(shader, ViewMatrix, ProjectionMatrix);
 
-	ViewMatrix = glm::translate(ViewMatrix, glm::vec3(30.0, 0.0, 0.0));
+	ViewMatrix = glm::translate(ViewMatrix, glm::vec3(300.0, 0.0, 0.0));
 	level2Label.Render(shader, ViewMatrix, ProjectionMatrix);
 
-	ViewMatrix = glm::translate(ViewMatrix, glm::vec3(30.0, 0.0, 0.0));
+	ViewMatrix = glm::translate(ViewMatrix, glm::vec3(300.0, 0.0, 0.0));
 	level3Label.Render(shader, ViewMatrix, ProjectionMatrix);
 
 	glDisable(GL_BLEND);
 
-	ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(-30.0, -20.0, 0.0));
+	ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(-300.0, -200.0, 0.0));
 
 	level1.Render(shader, ViewMatrix, ProjectionMatrix);
 
-	ViewMatrix = glm::translate(ViewMatrix, glm::vec3(30.0, 0.0, 0.0));
+	ViewMatrix = glm::translate(ViewMatrix, glm::vec3(300.0, 0.0, 0.0));
 
 	level2.Render(shader, ViewMatrix, ProjectionMatrix);
 
-	ViewMatrix = glm::translate(ViewMatrix, glm::vec3(30.0, 0.0, 0.0));
+	ViewMatrix = glm::translate(ViewMatrix, glm::vec3(300.0, 0.0, 0.0));
 
 	level3.Render(shader, ViewMatrix, ProjectionMatrix);
 
@@ -667,34 +649,34 @@ void Game::InitMenu()
 	glClearColor((0.0f / 255.0f), (0.0f / 255.0f), (0.0f / 255.0f), 0.0);				//sets the clear colour to whatever RGB values passed in, normalized between 0 and 1 
 	
 	
-	titleScreen.SetWidth(30.0f * (1024 / 512));
-	titleScreen.SetHeight(30.0f);
+	titleScreen.SetWidth(300.0f * (1024 / 512));
+	titleScreen.SetHeight(300.0f);
 
-	level1Label.SetWidth(5.0f * (320 / 64));
-	level1Label.SetHeight(5.0f);
+	level1Label.SetWidth(50.0f * (320 / 64));
+	level1Label.SetHeight(50.0f);
 
-	level2Label.SetWidth(5.0f * (320 / 64));
-	level2Label.SetHeight(5.0f);
+	level2Label.SetWidth(50.0f * (320 / 64));
+	level2Label.SetHeight(50.0f);
 
-	level3Label.SetWidth(5.0f * (320 / 64));
-	level3Label.SetHeight(5.0f);
+	level3Label.SetWidth(50.0f * (320 / 64));
+	level3Label.SetHeight(50.0f);
 
-	level1.SetWidth(25.0f);
-	level1.SetHeight(25.0f);
+	level1.SetWidth(250.0f);
+	level1.SetHeight(250.0f);
 	std::cout << "init";
-	level2.SetWidth(25.0f);
-	level2.SetHeight(25.0f);
-	level3.SetWidth(25.0f);
-	level3.SetHeight(25.0f);
+	level2.SetWidth(250.0f);
+	level2.SetHeight(250.0f);
+	level3.SetWidth(250.0f);
+	level3.SetHeight(250.0f);
 
-	titleScreen.Init(shader, red, "textures/TitleScreen.png");
-	level1Label.Init(shader, red, "textures/level_1_label.png");
-	level2Label.Init(shader, red, "textures/level_2_label.png");
-	level3Label.Init(shader, red, "textures/level_3_label.png");
+	titleScreen.Init(shader, white, "textures/TitleScreen.png");
+	level1Label.Init(shader, white, "textures/level_1_label.png");
+	level2Label.Init(shader, white, "textures/level_2_label.png");
+	level3Label.Init(shader, white, "textures/level_3_label.png");
 
-	level1.Init(shader, red, "textures/level_1.png");
-	level2.Init(shader, red, "textures/level_2_deselected.png");
-	level3.Init(shader, red, "textures/level_3_deselected.png");
+	level1.Init(shader, white, "textures/level_1.png");
+	level2.Init(shader, white, "textures/level_2_deselected.png");
+	level3.Init(shader, white, "textures/level_3_deselected.png");
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 }
@@ -704,24 +686,24 @@ void Game::MainMenu()
 	switch (selection)
 	{
 	case 0:
-		level1.Init(shader, red, "textures/level_1.png");
-		level2.Init(shader, red, "textures/level_2_deselected.png");
-		level3.Init(shader, red, "textures/level_3_deselected.png");
+		level1.Init(shader, white, "textures/level_1.png");
+		level2.Init(shader, white, "textures/level_2_deselected.png");
+		level3.Init(shader, white, "textures/level_3_deselected.png");
 		break;
 	case 1:
-		level1.Init(shader, red, "textures/level_1_deselected.png");
-		level2.Init(shader, red, "textures/level_2.png");
-		level3.Init(shader, red, "textures/level_3_deselected.png");
+		level1.Init(shader, white, "textures/level_1_deselected.png");
+		level2.Init(shader, white, "textures/level_2.png");
+		level3.Init(shader, white, "textures/level_3_deselected.png");
 		break;
 	case 2:
-		level1.Init(shader, red, "textures/level_1_deselected.png");
-		level2.Init(shader, red, "textures/level_2_deselected.png");
-		level3.Init(shader, red, "textures/level_3.png");
+		level1.Init(shader, white, "textures/level_1_deselected.png");
+		level2.Init(shader, white, "textures/level_2_deselected.png");
+		level3.Init(shader, white, "textures/level_3.png");
 		break;
 	default:
-		level1.Init(shader, red, "textures/level_1.png");
-		level2.Init(shader, red, "textures/level_2_deselected.png");
-		level3.Init(shader, red, "textures/level_3_deselected.png");
+		level1.Init(shader, white, "textures/level_1.png");
+		level2.Init(shader, white, "textures/level_2_deselected.png");
+		level3.Init(shader, white, "textures/level_3_deselected.png");
 		break;
 	}
 }
@@ -739,13 +721,13 @@ int Game::getSelection()
 void Game::restartGame()
 {
 	NPC.SetYpos(0.0f);
-	NPC.SetXpos(20 * 4);
-	NPC.IncPos(0, 20 * 2);
+	NPC.SetXpos(200 * 4);
+	NPC.IncPos(0, 200 * 2);
 	NPC.SetRot(1.5708f);
 
 	player.SetYpos(0.0f);
-	player.SetXpos(20 * 4);
-	player.IncPos(0, 20 * 3);
+	player.SetXpos(200 * 4);
+	player.IncPos(0, 200 * 3);
 	player.SetRot(1.5708f);
 
 	playerLaps = 0;

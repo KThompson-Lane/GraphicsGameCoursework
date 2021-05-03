@@ -4,7 +4,7 @@ Player::Player()
 {
 	m_speed = 0.0f;
 	m_rot = 0.0f;
-	m_topSpeed = 0.25;
+	m_topSpeed = 2.50f;
 }
 
 Player::Player(float topSpeed)

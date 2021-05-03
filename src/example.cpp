@@ -16,6 +16,8 @@ using namespace std;
 #include "Game.h"
 #include "Player.h"
 
+
+
 #include <iostream>
 using namespace std;
 
@@ -25,11 +27,11 @@ int screenWidth = 2560, screenHeight = 1440;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
-float zoom = 40.0f;
+float zoom = 4.0f;
 GLint tempX = 0;
 GLint tempY = 0;
 Shader shader;
-Player player(0.25);
+Player player(2.50f);
 Sprite myOtherSquare;
 Game racingGame(screenWidth, screenHeight);
 

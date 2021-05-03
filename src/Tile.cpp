@@ -66,8 +66,8 @@ Tile::Tile(float x, float y, int tileOffsetX, int tileOffsetY, float tileSizeX, 
 	m_vaoID = 0;
 	m_vboID[0] = 0;
 	m_vboID[1] = 0;
-	m_Width = 20;
-	m_Height = 20;
+	m_Width = 200;
+	m_Height = 200;
 	m_NumberOfVerts = 6;
 	m_xpos = x;
 	m_ypos = y;
@@ -148,10 +148,10 @@ void Tile::Init(Shader& shader, float colour[3])
 	case 'N':
 	case 'W':
 		obb.vertOriginal[0].x =  - halfWidth; //bottom left
-		obb.vertOriginal[0].y =   halfHeight - 2.75;
+		obb.vertOriginal[0].y =   halfHeight - 27.5;
 
 		obb.vertOriginal[1].x =   halfWidth; //bottom right
-		obb.vertOriginal[1].y =   halfHeight - 2.75;
+		obb.vertOriginal[1].y =   halfHeight - 27.5;
 
 		obb.vertOriginal[2].x =   halfWidth; //top right
 		obb.vertOriginal[2].y =   halfHeight;
@@ -170,26 +170,26 @@ void Tile::Init(Shader& shader, float colour[3])
 		obb.vertOriginal[1].y = -halfHeight;
 
 		obb.vertOriginal[2].x = halfWidth; //top right
-		obb.vertOriginal[2].y = -halfHeight + 2.75;
+		obb.vertOriginal[2].y = -halfHeight + 27.5;
 
 		obb.vertOriginal[3].x = -halfWidth; //top left
-		obb.vertOriginal[3].y = -halfHeight + 2.75;
+		obb.vertOriginal[3].y = -halfHeight + 27.5;
 		break;
 	case 'A':
 		obb.vertOriginal[0].x = -halfWidth; //bottom left
 		obb.vertOriginal[0].y = -halfHeight;
 
-		obb.vertOriginal[1].x = -halfWidth + 2.75; //bottom right
+		obb.vertOriginal[1].x = -halfWidth + 27.5; //bottom right
 		obb.vertOriginal[1].y = -halfHeight;
 
-		obb.vertOriginal[2].x = -halfWidth + 2.75; //top right
+		obb.vertOriginal[2].x = -halfWidth + 27.5; //top right
 		obb.vertOriginal[2].y = halfHeight;
 
 		obb.vertOriginal[3].x = -halfWidth; //top left
 		obb.vertOriginal[3].y = halfHeight;
 		break;
 	case 'D':
-		obb.vertOriginal[0].x = halfWidth - 2.75; //bottom left
+		obb.vertOriginal[0].x = halfWidth - 27.5; //bottom left
 		obb.vertOriginal[0].y = -halfHeight;
 
 		obb.vertOriginal[1].x = halfWidth; //bottom right
@@ -198,7 +198,7 @@ void Tile::Init(Shader& shader, float colour[3])
 		obb.vertOriginal[2].x = -halfWidth; //top right
 		obb.vertOriginal[2].y = halfHeight;
 
-		obb.vertOriginal[3].x = halfWidth - 2.75; //top left
+		obb.vertOriginal[3].x = halfWidth - 27.5; //top left
 		obb.vertOriginal[3].y = halfHeight;
 		break;
 
@@ -206,11 +206,11 @@ void Tile::Init(Shader& shader, float colour[3])
 
 
 		//first quadrilatiral
-		obb.vertOriginal[0].x = -halfWidth + 7.5; //bottom left 
-		obb.vertOriginal[0].y = halfHeight - 7.5;
+		obb.vertOriginal[0].x = -halfWidth + 75; //bottom left 
+		obb.vertOriginal[0].y = halfHeight - 75;
 
 		obb.vertOriginal[1].x = halfWidth;
-		obb.vertOriginal[1].y = halfHeight - 2.75; //bottom right
+		obb.vertOriginal[1].y = halfHeight - 27.5; //bottom right
 
 		obb.vertOriginal[2].x = halfWidth;	 //top right
 		obb.vertOriginal[2].y = halfHeight;

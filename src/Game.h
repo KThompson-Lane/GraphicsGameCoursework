@@ -7,11 +7,19 @@
 #include "..\FreeImage.h"
 #include "Player.h"
 #include "Background.h"
+
+#include "FreeType.h"		//include font library
+using namespace freetype;
+
+
 class Game
 {
 private:
 	//booleans to handle when the arrow keys are pressed or released.
-	int frameCount = 0;
+	Font lapFont;
+	Font timerFont;
+	float lapTime = 0.0f;
+	float bestTime = 0.0f;
 	bool temp = false;
 	bool gamePaused = true;
 	bool Left = false;
@@ -24,7 +32,7 @@ private:
 	bool npcCanLap = false;
 	bool playerWin = false;
 	int selection = 0;
-	float red[3] = { 1,0,0 };
+	float white[3] = { 1,1,1 };
 	Shader shader;
 	Player player;
 	Player NPC;
@@ -36,9 +44,6 @@ private:
 	Sprite level1;
 	Sprite level2;
 	Sprite level3;
-	Sprite lap1;
-	Sprite lap2;
-	Sprite lap3;
 	Sprite winScreen;
 	Sprite loseScreen;
 	Sprite pauseScreen;
