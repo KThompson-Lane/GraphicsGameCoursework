@@ -16,7 +16,6 @@ Game::Game(unsigned int width, unsigned int height)
 
 Game::~Game()
 {
-	
 }
 
 void Game::Init()
@@ -33,13 +32,11 @@ void Game::Init()
 	NPC.SetHeight(10.0f);
 	NPC.Init(shader, red, "textures/blueCar.png");
 
-	NPC.SetXpos(-20 * 4);
-	NPC.IncPos(0, -30);
+	NPC.SetXpos(20 * 4);
 	NPC.IncPos(0, 20 * 2);
 	NPC.SetRot(1.5708f);
 
-	player.SetXpos(-20 * 4);
-	player.IncPos(0,-30);
+	player.SetXpos(20 * 4);
 	player.IncPos(0,20 * 3);
 	player.SetRot(1.5708f);
 
@@ -89,6 +86,11 @@ void Game::Init()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
+bool Game::isPaused()
+{
+	return gamePaused;
+}
+
 void Game::togglePause()
 {
 	gamePaused = !gamePaused;
@@ -102,12 +104,14 @@ void Game::Update(float dt)
 		float yDist = 0.0f;
 		float temp = 0.0f;
 		glm::vec2 coords;
+		
+
 		if (player.IsInCollision(NPC.GetOBB()))
 		{
 			player.SetSpeed(-player.GetSpeed() / 2);
-			player.IncPos(-((player.GetSpeed() * dt * 10) * sinf(player.GetRot())), ((player.GetSpeed() * dt * 10) * cosf(player.GetRot()))); //same as above
+			player.IncPos(((player.GetSpeed() * dt * 10) * sinf(player.GetRot())), ((player.GetSpeed() * dt * 10) * cosf(player.GetRot()))); //same as above
 			NPC.SetSpeed(-NPC.GetSpeed() / 2);
-			NPC.IncPos(-((NPC.GetSpeed() * dt * 10) * sinf(NPC.GetRot())), ((NPC.GetSpeed() * dt * 10) * cosf(NPC.GetRot()))); //same as above
+			NPC.IncPos(((NPC.GetSpeed() * dt * 10) * sinf(NPC.GetRot())), ((NPC.GetSpeed() * dt * 10) * cosf(NPC.GetRot()))); //same as above
 
 		}
 		switch (AICurrentTile().getID())
@@ -120,85 +124,66 @@ void Game::Update(float dt)
 		switch (PlayersCurrentTile().getID())
 		{
 		case 'P':
-			CompleteLapPlayer();
-		case 'S':
-			if (player.GetYPos() > (PlayersCurrentTile().getYPos() * 20) - 25)
-			{
-				player.SetSpeed(-player.GetSpeed());
-				player.IncPos(-(((player.GetSpeed()) * dt) * sinf(player.GetRot())), (((player.GetSpeed()) * dt) * cosf(player.GetRot())));
-			}
-			break;
 		case 'N':
 			CompleteLapPlayer();
+		case 'S':
 		case 'W':
-			if (player.GetYPos() < (PlayersCurrentTile().getYPos() * 20) - 35)
-			{
-				player.SetSpeed(-player.GetSpeed());
-				player.IncPos(-(((player.GetSpeed()) * dt) * sinf(player.GetRot())), (((player.GetSpeed()) * dt) * cosf(player.GetRot())));
-			}
-			break;
 		case 'D':
-			if (-player.GetXPos() > (PlayersCurrentTile().getXPos() * 20) + 5)
-			{
-				player.SetSpeed(-player.GetSpeed());
-				player.IncPos(-(((player.GetSpeed()) * dt) * sinf(player.GetRot())), (((player.GetSpeed()) * dt) * cosf(player.GetRot())));
-			}
-			break;
 		case 'A':
-			if (-player.GetXPos() < (PlayersCurrentTile().getXPos() * 20) - 5)
+			if (PlayersCurrentTile().IsInCollision(player.GetOBB()))
 			{
 				player.SetSpeed(-player.GetSpeed());
-				player.IncPos(-(((player.GetSpeed()) * dt) * sinf(player.GetRot())), (((player.GetSpeed()) * dt) * cosf(player.GetRot())));
+				player.IncPos(((player.GetSpeed() * dt * 2) * sinf(player.GetRot())), ((player.GetSpeed() * dt * 2) * cosf(player.GetRot()))); //same as above
 			}
 			break;
 		case 'R':
 			//check collision
-			xDist = (((PlayersCurrentTile().getXPos() * 20) - 10) - (-player.GetXPos()));
-			yDist = ((player.GetYPos()) - ((PlayersCurrentTile().getYPos() * 20) - 20));
+			xDist = (((PlayersCurrentTile().getXPos()) - 10) - (player.GetXPos()));
+			yDist = ((player.GetYPos()) - ((PlayersCurrentTile().getYPos()) + 10));
 			temp = sqrt((xDist * xDist) + (yDist * yDist));
 			if (temp > 15.0f)
 			{
 				player.SetSpeed(-player.GetSpeed());
-				player.IncPos(-(((player.GetSpeed()) * dt) * sinf(player.GetRot())), (((player.GetSpeed()) * dt) * cosf(player.GetRot())));
+				player.IncPos((((player.GetSpeed()) * dt) * sinf(player.GetRot())), (((player.GetSpeed()) * dt) * cosf(player.GetRot())));
 			}
 			break;
 		case 'V':
 			//check collision
-			xDist = (((PlayersCurrentTile().getXPos() * 20) - 10) - (-player.GetXPos()));
-			yDist = ((player.GetYPos()) - ((PlayersCurrentTile().getYPos() * 20) - 40));
+			xDist = (((PlayersCurrentTile().getXPos()) - 10) - (player.GetXPos()));
+			yDist = ((player.GetYPos()) - ((PlayersCurrentTile().getYPos()) - 10));
 			temp = sqrt((xDist * xDist) + (yDist * yDist));
 			if (temp > 15.0f)
 			{
 				player.SetSpeed(-player.GetSpeed());
-				player.IncPos(-(((player.GetSpeed()) * dt) * sinf(player.GetRot())), (((player.GetSpeed()) * dt) * cosf(player.GetRot())));
+				player.IncPos((((player.GetSpeed()) * dt) * sinf(player.GetRot())), (((player.GetSpeed()) * dt) * cosf(player.GetRot())));
 			}
 			break;
 
 		case 'Z':
 			//check collision
-			xDist = (((PlayersCurrentTile().getXPos() * 20) + 10) - (-player.GetXPos()));
-			yDist = ((player.GetYPos()) - ((PlayersCurrentTile().getYPos() * 20) - 40));
+			xDist = (((PlayersCurrentTile().getXPos()) + 10) - (player.GetXPos()));
+			yDist = ((player.GetYPos()) - ((PlayersCurrentTile().getYPos()) - 10));
 			temp = sqrt((xDist * xDist) + (yDist * yDist));
 			if (temp > 15.0f)
 			{
 				player.SetSpeed(-player.GetSpeed());
-				player.IncPos(-(((player.GetSpeed()) * dt) * sinf(player.GetRot())), (((player.GetSpeed()) * dt) * cosf(player.GetRot())));
+				player.IncPos((((player.GetSpeed()) * dt) * sinf(player.GetRot())), (((player.GetSpeed()) * dt) * cosf(player.GetRot())));
 			}
 			break;
 
 		case 'Q':
 			//check collision
-			xDist = (((PlayersCurrentTile().getXPos() * 20) + 10) - (-player.GetXPos()));
-			yDist = ((player.GetYPos()) - ((PlayersCurrentTile().getYPos() * 20) - 20));
+			xDist = (((PlayersCurrentTile().getXPos()) + 10) - (player.GetXPos()));
+			yDist = ((player.GetYPos()) - ((PlayersCurrentTile().getYPos()) + 10));
 			temp = sqrt((xDist * xDist) + (yDist * yDist));
 			if (temp > 15.0f)
 			{
 				player.SetSpeed(-player.GetSpeed());
-				player.IncPos(-(((player.GetSpeed()) * dt) * sinf(player.GetRot())), (((player.GetSpeed()) * dt) * cosf(player.GetRot())));
+				player.IncPos((((player.GetSpeed()) * dt) * sinf(player.GetRot())), (((player.GetSpeed()) * dt) * cosf(player.GetRot())));
 			}
 			break;
 		}
-		glm::vec2 tilePos = { std::round(-player.GetXPos() / 20), std::round((player.GetYPos() + 30) / 20) };
+		glm::vec2 tilePos = { std::round(player.GetXPos() / 20), std::round((player.GetYPos()) / 20) };
 		switch (bg.checkpoints[tilePos].getType())
 		{
 		case 'e':
@@ -316,13 +301,13 @@ void Game::CompleteLapPlayer()
 
 Tile& Game::AICurrentTile()
 {
-	glm::vec2 tilePos = { std::round(-NPC.GetXPos() / 20), std::round((NPC.GetYPos() + 30) / 20) };
+	glm::vec2 tilePos = { std::round(NPC.GetXPos() / 20), std::round((NPC.GetYPos()) / 20) };
 	return bg.trackTiles[tilePos];
 }
 
 Tile& Game::PlayersCurrentTile()
 {
-	glm::vec2 tilePos = { std::round(-player.GetXPos() / 20), std::round((player.GetYPos() + 30) / 20) };
+	glm::vec2 tilePos = { std::round(player.GetXPos() / 20), std::round((player.GetYPos()) / 20) };
 	return bg.trackTiles[tilePos];
 }
 
@@ -444,7 +429,7 @@ void Game::AIMove(float dt)
 			break;
 
 	}
-	NPC.IncPos(-((NPC.GetSpeed() * dt) * sinf(NPC.GetRot())), ((NPC.GetSpeed() * dt) * cosf(NPC.GetRot()))); //same as above
+	NPC.IncPos(((NPC.GetSpeed() * dt) * sinf(NPC.GetRot())), ((NPC.GetSpeed() * dt) * cosf(NPC.GetRot()))); //same as above
 }
 
 void Game::ProcessInput(float dt)
@@ -512,7 +497,7 @@ void Game::ProcessInput(float dt)
 			}
 		}
 		//std::cout << player.GetSpeed();
-		player.IncPos(-((player.GetSpeed() * dt) * sinf(player.GetRot())), ((player.GetSpeed() * dt) * cosf(player.GetRot()))); //same as above
+		player.IncPos(((player.GetSpeed() * dt) * sinf(player.GetRot())), ((player.GetSpeed() * dt) * cosf(player.GetRot()))); //same as above
 
 	}
 }
@@ -524,7 +509,7 @@ void Game::Render()
 	
 	//make work
 	glm::mat4 cameraMatrix = ProjectionMatrix;
-	cameraMatrix = glm::translate(cameraMatrix, glm::vec3(player.GetXPos(), player.GetYPos(), 0.0));
+	cameraMatrix = glm::translate(cameraMatrix, glm::vec3(-player.GetXPos(), player.GetYPos() - bg.GetMapHeight(), 0.0));
 	ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0));
 
 	glm::mat4 ModelViewMatrix = glm::translate(getViewMatrix(), glm::vec3(player.GetXPos(), player.GetYPos(), 0.0));
@@ -532,14 +517,14 @@ void Game::Render()
 	ModelViewMatrix = glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0);
 	for (Tile& dirtTile : bg.dirtTiles)
 	{
-		TileViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(dirtTile.getXPos() * dirtTile.GetWidth(), (bg.GetMapHeight() - (dirtTile.getYPos() * dirtTile.GetHeight())), 0.0));
+		TileViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(dirtTile.getXPos(), (bg.GetMapHeight() - (dirtTile.getYPos())), 0.0));
 		dirtTile.Render(shader, TileViewMatrix, cameraMatrix);
 	}
 	glEnable(GL_BLEND);
 
 	for (auto& it : bg.trackTiles)
 	{
-		TileViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(it.second.getXPos() * it.second.GetWidth(), (bg.GetMapHeight() - (it.second.getYPos() * it.second.GetHeight())), 0.0));
+		TileViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(it.second.getXPos(), (bg.GetMapHeight() - (it.second.getYPos())), 0.0));
 		it.second.Render(shader, TileViewMatrix, cameraMatrix);
 	}
 	for (auto& it : bg.checkpoints)
@@ -548,19 +533,19 @@ void Game::Render()
 		{
 			continue;
 		}
-		TileViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(it.second.getXPos() * it.second.GetWidth(), (bg.GetMapHeight() - (it.second.getYPos() * it.second.GetHeight())), 0.0));
+		TileViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(it.second.getXPos(), (bg.GetMapHeight() - (it.second.getYPos() )), 0.0));
 		it.second.Render(shader, TileViewMatrix, cameraMatrix);
 	}
 
 	//player rendering code
 	ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0));
-	ModelViewMatrix = glm::translate(ViewMatrix, glm::vec3(-player.GetXPos(), -player.GetYPos(), 0.0));
+	ModelViewMatrix = glm::translate(ViewMatrix, glm::vec3(player.GetXPos(), bg.GetMapHeight() -player.GetYPos(), 0.0));
 	ModelViewMatrix = glm::rotate(ModelViewMatrix, player.GetRot(), glm::vec3(0.0, 0.0, 1.0));
 	player.Render(shader, ModelViewMatrix, cameraMatrix);
 
 	//npc rendering code
 	ViewMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0));
-	ModelViewMatrix = glm::translate(ViewMatrix, glm::vec3(-NPC.GetXPos(), -NPC.GetYPos(), 0.0));
+	ModelViewMatrix = glm::translate(ViewMatrix, glm::vec3(NPC.GetXPos(), bg.GetMapWidth() -NPC.GetYPos(), 0.0));
 	ModelViewMatrix = glm::rotate(ModelViewMatrix, NPC.GetRot(), glm::vec3(0.0, 0.0, 1.0));
 	NPC.Render(shader, ModelViewMatrix, cameraMatrix);
 
@@ -754,14 +739,12 @@ int Game::getSelection()
 void Game::restartGame()
 {
 	NPC.SetYpos(0.0f);
-	NPC.SetXpos(-20 * 4);
-	NPC.IncPos(0, -30);
+	NPC.SetXpos(20 * 4);
 	NPC.IncPos(0, 20 * 2);
 	NPC.SetRot(1.5708f);
 
 	player.SetYpos(0.0f);
-	player.SetXpos(-20 * 4);
-	player.IncPos(0, -30);
+	player.SetXpos(20 * 4);
 	player.IncPos(0, 20 * 3);
 	player.SetRot(1.5708f);
 

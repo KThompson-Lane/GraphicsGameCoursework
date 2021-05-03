@@ -33,6 +33,7 @@ Player player(0.25);
 Sprite myOtherSquare;
 Game racingGame(screenWidth, screenHeight);
 
+
 //OPENGL FUNCTION PROTOTYPES
 void display();				//used as callback in glut for display.
 void reshape(int width, int height); //used as callback for reshape function in glut
@@ -88,7 +89,7 @@ void keyboardUp(unsigned char key, int x, int y)
 			break;
 		case 27:
 			//quit game
-			//quit();
+			exit(0);
 
 			//MAKE WORK OR RESET FUNCTION
 			racingGame.~Game();
@@ -106,6 +107,13 @@ void keyboardUp(unsigned char key, int x, int y)
 		case ' ':
 			racingGame.togglePause();
 			break;
+		}
+		if (racingGame.isPaused())
+		{
+			if (key == 27)
+			{
+				exit(0);
+			}
 		}
 	}
 
@@ -205,7 +213,7 @@ int main(int argc, char **argv)
 	glutCreateWindow("OpenGL FreeGLUT Example: Image loading");
 
 	glutReshapeFunc(reshape);
-	
+
 	//This initialises glew - it must be called after the window is created.
 	GLenum err = glewInit();
 	if (GLEW_OK != err)

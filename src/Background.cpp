@@ -17,6 +17,8 @@ Background::Background()
 
 void Background::loadBackground(int levelNumber)
 {
+	glDeleteTextures(1, &m_TrackSheetTex);
+
 	
 	//load png image
 	int imageHeight = 0;
@@ -173,8 +175,8 @@ void Background::loadBackground(int levelNumber)
 	{
 		for (unsigned int x = 0; x < m_MapWidth; x++)
 		{
-			dirt.setXPos(x);
-			dirt.setYPos(y);
+			dirt.setXPos(x*20.0f);
+			dirt.setYPos(y*20.0f);
 			dirtTiles.push_back(dirt);
 
 			char tileType = s_MapTiles[x + (y * m_MapWidth)]; 
@@ -189,8 +191,8 @@ void Background::loadBackground(int levelNumber)
 				}
 				else {
 					Checkpoint check = m_EntityLookup[entity];
-					check.setXPos(x);
-					check.setYPos(y);
+					check.setXPos(x*20.0f);
+					check.setYPos(y*20.0f);
 					glm::vec2 coords = { x,y };
 					checkpoints.emplace(coords, check);
 					m_checkpoints++;
@@ -203,8 +205,8 @@ void Background::loadBackground(int levelNumber)
 					continue;
 				}
 				Tile temp = m_TileLookup[tileType];
-				temp.setXPos(x);
-				temp.setYPos(y);
+				temp.setXPos(x * 20.0f);
+				temp.setYPos(y * 20.0f);
 				temp.setID(tileType);
 				temp.setInstruction(npcInstruction);
 				glm::vec2 coords = { x,y };

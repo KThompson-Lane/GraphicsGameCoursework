@@ -5,6 +5,8 @@
 #include "..\glm\gtc\matrix_transform.hpp"
 #include "..\gl\glew.h"
 #include "..\shaders\Shader.h"
+#include "OBB.h"
+
 class Tile
 {
 private:
@@ -24,6 +26,9 @@ private:
 	//Dimensions of the sprite.
 	float m_Width;
 	float m_Height;
+
+	OBB obb; //obb object for oriented bounding box collision
+
 
 	//position of the sprite
 	float m_xpos;
@@ -45,6 +50,9 @@ public:
 	float GetHeight();
 	void Init(Shader& shader, float colour[3]);
 	void Render(Shader& shader, glm::mat4& ModelViewMatrix, glm::mat4& ProjectionMatrix);
+
+	OBB& GetOBB();
+	bool IsInCollision(OBB& anotherOBB);
 }; 
 
 

@@ -129,14 +129,115 @@ void Tile::Init(Shader& shader, float colour[3])
 	float halfWidth = m_Width / 2.0f;
 	float halfHeight = m_Height / 2.0f;
 
-	vert[0] = -halfWidth; vert[1] = halfHeight; vert[2] = 0.0; //x,y,z values for each vertex
-	vert[3] = -halfWidth; vert[4] = -halfHeight; vert[5] = 0.0;
-	vert[6] = halfWidth; vert[7] = -halfHeight; vert[8] = 0.0;
+	
+	vert[0] = -halfWidth; vert[1] = halfHeight; vert[2] = 0.0; //top left //x,y,z values for each vertex 
+	vert[3] = -halfWidth; vert[4] = -halfHeight; vert[5] = 0.0; //bottom left
+	vert[6] = halfWidth; vert[7] = -halfHeight; vert[8] = 0.0; //bottom right
 
-	vert[9] = -halfWidth; vert[10] = halfHeight; vert[11] = 0.0;
-	vert[12] = halfWidth; vert[13] = halfHeight; vert[14] = 0.0;
-	vert[15] = halfWidth; vert[16] = -halfHeight; vert[17] = 0.0;
+	vert[9] = -halfWidth; vert[10] = halfHeight; vert[11] = 0.0; //top left
+	vert[12] = halfWidth; vert[13] = halfHeight; vert[14] = 0.0; //top right
+	vert[15] = halfWidth; vert[16] = -halfHeight; vert[17] = 0.0; //bottom right
 
+	/********INIT CORNERS FOR OBB***********/
+
+	float normX = -(this->getXPos() * 20);
+	float normY = (this->getYPos() * 20) - 30;
+	switch (this->getID())
+	{
+		//for each different tile set the collider 
+	case 'N':
+	case 'W':
+		obb.vertOriginal[0].x =  - halfWidth; //bottom left
+		obb.vertOriginal[0].y =   halfHeight - 2.75;
+
+		obb.vertOriginal[1].x =   halfWidth; //bottom right
+		obb.vertOriginal[1].y =   halfHeight - 2.75;
+
+		obb.vertOriginal[2].x =   halfWidth; //top right
+		obb.vertOriginal[2].y =   halfHeight;
+
+		obb.vertOriginal[3].x =  - halfWidth; //top left
+		obb.vertOriginal[3].y =   halfHeight;
+
+		break;
+
+	case 'P':
+	case 'S':
+		obb.vertOriginal[0].x = -halfWidth; //bottom left
+		obb.vertOriginal[0].y = -halfHeight;
+
+		obb.vertOriginal[1].x = halfWidth; //bottom right
+		obb.vertOriginal[1].y = -halfHeight;
+
+		obb.vertOriginal[2].x = halfWidth; //top right
+		obb.vertOriginal[2].y = -halfHeight + 2.75;
+
+		obb.vertOriginal[3].x = -halfWidth; //top left
+		obb.vertOriginal[3].y = -halfHeight + 2.75;
+		break;
+	case 'A':
+		obb.vertOriginal[0].x = -halfWidth; //bottom left
+		obb.vertOriginal[0].y = -halfHeight;
+
+		obb.vertOriginal[1].x = -halfWidth + 2.75; //bottom right
+		obb.vertOriginal[1].y = -halfHeight;
+
+		obb.vertOriginal[2].x = -halfWidth + 2.75; //top right
+		obb.vertOriginal[2].y = halfHeight;
+
+		obb.vertOriginal[3].x = -halfWidth; //top left
+		obb.vertOriginal[3].y = halfHeight;
+		break;
+	case 'D':
+		obb.vertOriginal[0].x = halfWidth - 2.75; //bottom left
+		obb.vertOriginal[0].y = -halfHeight;
+
+		obb.vertOriginal[1].x = halfWidth; //bottom right
+		obb.vertOriginal[1].y = -halfHeight;
+
+		obb.vertOriginal[2].x = -halfWidth; //top right
+		obb.vertOriginal[2].y = halfHeight;
+
+		obb.vertOriginal[3].x = halfWidth - 2.75; //top left
+		obb.vertOriginal[3].y = halfHeight;
+		break;
+
+	case 'Q':
+
+
+		//first quadrilatiral
+		obb.vertOriginal[0].x = -halfWidth + 7.5; //bottom left 
+		obb.vertOriginal[0].y = halfHeight - 7.5;
+
+		obb.vertOriginal[1].x = halfWidth;
+		obb.vertOriginal[1].y = halfHeight - 2.75; //bottom right
+
+		obb.vertOriginal[2].x = halfWidth;	 //top right
+		obb.vertOriginal[2].y = halfHeight;
+
+		obb.vertOriginal[3].x = -halfWidth; //top left
+		obb.vertOriginal[3].y = halfHeight;
+
+
+
+		break;
+	default:
+		obb.vert[0].x = normX + halfWidth;
+		obb.vert[0].y = normY + halfHeight;
+
+		obb.vert[1].x = normX - halfWidth;
+		obb.vert[1].y = normY + halfHeight; //bottom right
+
+		obb.vert[2].x = normX - halfWidth;	 //top right
+		obb.vert[2].y = normY - halfHeight;
+
+		obb.vert[3].x = normX + halfWidth; //top left
+		obb.vert[3].y = normY - halfHeight;
+
+		break;
+	}
+
+	/*******************/
 
 	float tex[12];
 	//U left V right (U = x V = Y)
@@ -209,7 +310,7 @@ void Tile::Init(Shader& shader, float colour[3])
 
 void Tile::Render(Shader & shader, glm::mat4 & ModelViewMatrix, glm::mat4 & ProjectionMatrix)
 {
-
+	obb.transformPoints(ModelViewMatrix);
 	glUseProgram(shader.handle());  // use the shader
 
 	//set the DiffuseMap in GLSL to the texture unit 0.
@@ -229,4 +330,18 @@ void Tile::Render(Shader & shader, glm::mat4 & ModelViewMatrix, glm::mat4 & Proj
 
 	glBindVertexArray(0); //unbind the vertex array object
 	glUseProgram(0); //turn off the current shader
+}
+
+OBB& Tile::GetOBB()
+{
+	return obb;
+}
+
+bool Tile::IsInCollision(OBB& anotherOBB)
+{
+	if (obb.SAT2D(anotherOBB))
+	{
+		return true;
+	}
+	return false;
 }

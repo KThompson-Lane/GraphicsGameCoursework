@@ -11,6 +11,7 @@ class Game
 {
 private:
 	//booleans to handle when the arrow keys are pressed or released.
+	int frameCount = 0;
 	bool temp = false;
 	bool gamePaused = true;
 	bool Left = false;
@@ -47,6 +48,7 @@ private:
 public: 
 	bool inMenu = true;
 	bool gameOver = false;
+	bool isPaused();
 	void togglePause();
 	unsigned int Width, Height;
 	Game(unsigned int width, unsigned int height);
