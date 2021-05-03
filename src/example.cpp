@@ -23,11 +23,11 @@ using namespace std;
 
 glm::mat4 ViewMatrix;  // matrix for the modelling and viewing
 glm::mat4 ProjectionMatrix; // matrix for the orthographic projection
-int screenWidth = 2560, screenHeight = 1440;
+int screenWidth = 1920, screenHeight = 1080;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
-float zoom = 4.0f;
+float zoom = 3.0f;
 GLint tempX = 0;
 GLint tempY = 0;
 Shader shader;
@@ -43,12 +43,9 @@ void reshape(int width, int height); //used as callback for reshape function in 
 
 void reshape(int width, int height)		// Resize the OpenGL window
 {
-	screenWidth = width;
-	screenHeight = height;
-
 	glViewport(0,0, width, height);						// set Viewport dimensions
 
-	racingGame.setProjMatrix((glm::ortho(width / -zoom, width / zoom, height / -zoom, height / zoom))); //reset to 40
+	racingGame.setProjMatrix((glm::ortho(screenWidth / -zoom, screenWidth / zoom, screenHeight / -zoom, screenHeight / zoom))); //reset to 40
 
 }
 
@@ -146,6 +143,10 @@ void special(int key, int x, int y)
 
 void specialUp(int key, int x, int y)
 {
+	if (key == GLUT_KEY_F11)
+	{
+		glutFullScreenToggle();
+	}
 	if (racingGame.inMenu)
 	{
 		switch (key)
