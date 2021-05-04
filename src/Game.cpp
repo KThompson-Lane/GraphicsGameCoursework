@@ -29,7 +29,7 @@ Game::~Game()
 
 void Game::Init()
 {
-	glClearColor((39.0f/255.0f),(174.0f/255.0f), (96.0f/255.0f), 0.0);						//sets the clear colour to whatever RGB values passed in, normalized between 0 and 1 
+	glClearColor((39.0f/255.0f),(174.0f/255.0f), (96.0f/255.0f), 0.0);	//sets the clear colour to whatever RGB values passed in, normalized between 0 and 1 
 
 	///This part commented is to scale the width of the sprite to match the dimensions of the car.png image.
 	player.SetWidth(100.0f * (264.0f / 500.0f));
@@ -78,7 +78,6 @@ void Game::Init()
 	lapFont.init("fonts/BAUHS93.TTF", 75, black);
 	timerFont.init("fonts/BAUHS93.TTF", 40, black);
 	SoundEngine->setSoundVolume(0.5f);
-	//SoundEngine->play2D("music/everything.mp3", true);
 	EngineNoise = SoundEngine->play2D("music/engineSound.wav", true, true);
 	EngineNoise->setVolume(0.1f);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -800,4 +799,3 @@ void Game::restartLevel()
 	togglePause();
 	gameOver = false;
 }
-
