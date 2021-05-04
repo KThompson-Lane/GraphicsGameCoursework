@@ -14,8 +14,6 @@ using namespace std;
 #include "..\GL\freeglut.h"
 #include "..\FreeImage.h"
 #include "Game.h"
-#include "Player.h"
-
 
 
 #include <iostream>
@@ -28,10 +26,7 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 float zoom = 3.0f;
-GLint tempX = 0;
-GLint tempY = 0;
 Shader shader;
-Player player(2.50f);
 Sprite myOtherSquare;
 Game racingGame(screenWidth, screenHeight);
 
@@ -84,17 +79,12 @@ void keyboardUp(unsigned char key, int x, int y)
 		{
 		case 32:
 			//restart game
-			racingGame.restartGame();
+			racingGame.restartLevel();
 			break;
 		case 27:
 			//quit game
 			exit(0);
-
-			//MAKE WORK OR RESET FUNCTION
-			racingGame.~Game();
-			new(&racingGame) Game(screenWidth, screenHeight);
-			reshape(screenWidth, screenHeight);
-			racingGame.InitMenu();
+			break;
 			
 		}
 
@@ -213,7 +203,7 @@ int main(int argc, char **argv)
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 	glutInitWindowSize(screenWidth, screenHeight);
 	glutInitWindowPosition(100, 100);
-	glutCreateWindow("OpenGL FreeGLUT Example: Image loading");
+	glutCreateWindow("Car Game");
 
 	glutReshapeFunc(reshape);
 

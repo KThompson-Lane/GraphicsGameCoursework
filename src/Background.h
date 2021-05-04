@@ -21,6 +21,7 @@ private:
 	std::unordered_map<char, Tile> m_TileLookup;
 	std::unordered_map<char, Checkpoint> m_EntityLookup;
 public:
+	~Background();
 	Background();
 	std::vector<Tile> dirtTiles;
 	std::unordered_map<glm::vec2, Tile> trackTiles;

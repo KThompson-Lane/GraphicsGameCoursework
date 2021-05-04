@@ -29,6 +29,8 @@ private:
 	int checkpointsCompleted;
 	int playerLaps = 0;
 	int npcLaps = 0;
+	bool NPCCrashed = false;
+	bool playerCrashed = false;
 	bool npcCanLap = false;
 	bool playerWin = false;
 	int selection = 0;
@@ -56,6 +58,7 @@ public:
 	bool isPaused();
 	void togglePause();
 	unsigned int Width, Height;
+	Game();
 	Game(unsigned int width, unsigned int height);
 	~Game();
 	void Init();
@@ -78,6 +81,7 @@ public:
 	void MainMenu();
 	void setSelection(int selection);
 	int getSelection();
+	void restartLevel();
 	void restartGame();
 
 };

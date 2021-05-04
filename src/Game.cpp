@@ -7,6 +7,14 @@
 irrklang::ISoundEngine* SoundEngine = irrklang::createIrrKlangDevice();
 irrklang::ISound* EngineNoise;
 
+Game::Game()
+{
+	NPC.SetTopSpeed(0.8f);
+	player.SetTopSpeed(0.8f);
+	Width = 1920;
+	Height = 1080;
+}
+
 Game::Game(unsigned int width, unsigned int height)
 {
 	NPC.SetTopSpeed(0.8f);
@@ -21,7 +29,6 @@ Game::~Game()
 
 void Game::Init()
 {
-	
 	glClearColor((39.0f/255.0f),(174.0f/255.0f), (96.0f/255.0f), 0.0);						//sets the clear colour to whatever RGB values passed in, normalized between 0 and 1 
 
 	///This part commented is to scale the width of the sprite to match the dimensions of the car.png image.
@@ -103,7 +110,19 @@ void Game::Update(float dt)
 			player.IncPos(((player.GetSpeed() * dt * 10) * sinf(player.GetRot())), ((player.GetSpeed() * dt * 10) * cosf(player.GetRot()))); //same as above
 			NPC.SetSpeed(-NPC.GetSpeed() / 2);
 			NPC.IncPos(((NPC.GetSpeed() * dt * 10) * sinf(NPC.GetRot())), ((NPC.GetSpeed() * dt * 10) * cosf(NPC.GetRot()))); //same as above
+			if (playerCrashed == false)
+			{
+				playerCrashed = true;
+				player.Init(shader, white, "textures/car_broken.png");
+				player.SetTopSpeed(player.GetTopSpeed() * 0.85);
 
+			}
+			if (NPCCrashed == false)
+			{
+				NPCCrashed = true;
+				NPC.Init(shader, white, "textures/blueCar_broken.png");
+				NPC.SetTopSpeed(NPC.GetTopSpeed() * 0.85);
+			}
 		}
 		switch (AICurrentTile().getID())
 		{
@@ -123,6 +142,13 @@ void Game::Update(float dt)
 		case 'A':
 			if (PlayersCurrentTile().IsInCollision(player.GetOBB()))
 			{
+				if (playerCrashed == false)
+				{
+					playerCrashed = true;
+					player.Init(shader, white, "textures/car_broken.png");
+					player.SetTopSpeed(player.GetTopSpeed() * 0.85);
+
+				}
 				player.SetSpeed(-player.GetSpeed());
 				player.IncPos(((player.GetSpeed() * dt * 2) * sinf(player.GetRot())), ((player.GetSpeed() * dt * 2) * cosf(player.GetRot()))); //same as above
 			}
@@ -134,6 +160,13 @@ void Game::Update(float dt)
 			temp = sqrt((xDist * xDist) + (yDist * yDist));
 			if (temp > 150.0f)
 			{
+				if (playerCrashed == false)
+				{
+					playerCrashed = true;
+					player.Init(shader, white, "textures/car_broken.png");
+					player.SetTopSpeed(player.GetTopSpeed() * 0.85);
+
+				}
 				player.SetSpeed(-player.GetSpeed());
 				player.IncPos((((player.GetSpeed()) * dt) * sinf(player.GetRot())), (((player.GetSpeed()) * dt) * cosf(player.GetRot())));
 			}
@@ -145,6 +178,13 @@ void Game::Update(float dt)
 			temp = sqrt((xDist * xDist) + (yDist * yDist));
 			if (temp > 150.0f)
 			{
+				if (playerCrashed == false)
+				{
+					playerCrashed = true;
+					player.Init(shader, white, "textures/car_broken.png");
+					player.SetTopSpeed(player.GetTopSpeed() * 0.85);
+
+				}
 				player.SetSpeed(-player.GetSpeed());
 				player.IncPos((((player.GetSpeed()) * dt) * sinf(player.GetRot())), (((player.GetSpeed()) * dt) * cosf(player.GetRot())));
 			}
@@ -157,6 +197,13 @@ void Game::Update(float dt)
 			temp = sqrt((xDist * xDist) + (yDist * yDist));
 			if (temp > 150.0f)
 			{
+				if (playerCrashed == false)
+				{
+					playerCrashed = true;
+					player.Init(shader, white, "textures/car_broken.png");
+					player.SetTopSpeed(player.GetTopSpeed() * 0.85);
+
+				}
 				player.SetSpeed(-player.GetSpeed());
 				player.IncPos((((player.GetSpeed()) * dt) * sinf(player.GetRot())), (((player.GetSpeed()) * dt) * cosf(player.GetRot())));
 			}
@@ -169,6 +216,12 @@ void Game::Update(float dt)
 			temp = sqrt((xDist * xDist) + (yDist * yDist));
 			if (temp > 150.0f)
 			{
+				if (playerCrashed == false)
+				{
+					playerCrashed = true;
+					player.Init(shader, white, "textures/car_broken.png");
+					player.SetTopSpeed(player.GetTopSpeed() * 0.85);
+				}
 				player.SetSpeed(-player.GetSpeed());
 				player.IncPos((((player.GetSpeed()) * dt) * sinf(player.GetRot())), (((player.GetSpeed()) * dt) * cosf(player.GetRot())));
 			}
@@ -718,18 +771,26 @@ int Game::getSelection()
 	return this->selection;
 }
 
-void Game::restartGame()
+void Game::restartLevel()
 {
 	NPC.SetYpos(0.0f);
 	NPC.SetXpos(200 * 4);
 	NPC.IncPos(0, 200 * 2);
 	NPC.SetRot(1.5708f);
+	NPC.SetTopSpeed(0.8f);
+
+	NPCCrashed = false;
+	NPC.Init(shader, white, "textures/blueCar.png");
 
 	player.SetYpos(0.0f);
 	player.SetXpos(200 * 4);
 	player.IncPos(0, 200 * 3);
 	player.SetRot(1.5708f);
+	player.SetTopSpeed(0.8f);
 
+	playerCrashed = false;
+	player.Init(shader, white, "textures/car.png");
+	lapTime = 0.0f;
 	playerLaps = 0;
 	npcLaps = 0;
 	npcCanLap = false;
@@ -739,6 +800,4 @@ void Game::restartGame()
 	togglePause();
 	gameOver = false;
 }
-
-
 

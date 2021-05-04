@@ -26,9 +26,9 @@ void Player::IncRot(float rot)
 {
 	if (m_rot + rot <= 0)
 	{
-		m_rot = 6.28319;
+		m_rot = 360*3.14/180;
 	}
-	m_rot = fmod(m_rot + rot, 6.28319);
+	m_rot = fmod(m_rot + rot, 360*3.14/180);
 }
 
 float Player::GetSpeed() 

@@ -8,6 +8,7 @@ static const unsigned int s_MapWidth = 30;
 
 
 
+
 Background::Background()
 {
 	m_TrackSheetTex = 0;
@@ -15,11 +16,12 @@ Background::Background()
 	m_MapHeight = 0;
 }
 
+Background::~Background()
+{
+}
+
 void Background::loadBackground(int levelNumber)
 {
-	glDeleteTextures(1, &m_TrackSheetTex);
-
-	
 	//load png image
 	int imageHeight = 0;
 	int imageWidth = 0;
